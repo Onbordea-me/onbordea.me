@@ -35,10 +35,10 @@
       <!-- Sidebar -->
       <aside id="sidebar" class="w-20 bg-gray-900 text-white flex flex-col items-center py-4 space-y-6 transition-all duration-300">
         <!-- Logo -->
-        <div class="text-2xl font-bold">🌀</div>
+        <img id="logo" src="assets/logo.png">
 
         <!-- Icons (static placeholders) -->
-        <nav class="flex flex-col items-start space-y-6 mt-4 w-full">
+        <nav id="sidebar-nav" class="flex flex-col items-center space-y-6 mt-4 w-full">
           <div class="flex items-center space-x-2">
             <span>🏠</span>
             <span class="sidebar-label hidden">Home</span>
@@ -156,19 +156,23 @@
       });
     };
   </script>
+
   <script>
   const sidebar = document.getElementById('sidebar');
   const toggleBtn = document.getElementById('sidebar-toggle');
+  const sidebarNav = document.getElementById('sidebar-nav');
 
   toggleBtn.addEventListener('click', () => {
     if (sidebar.classList.contains('w-20')) {
       sidebar.classList.remove('w-20');
       sidebar.classList.add('w-64');
-      // Optionally, show text labels or more content here
+      sidebarNav.classList.remove('items-center');
+      sidebarNav.classList.add('items-start');
     } else {
       sidebar.classList.remove('w-64');
       sidebar.classList.add('w-20');
-      // Optionally, hide text labels or content here
+      sidebarNav.classList.remove('items-start');
+      sidebarNav.classList.add('items-center');
     }
 
     document.querySelectorAll('.sidebar-label').forEach(label => {
@@ -176,6 +180,7 @@
     });
   });
 </script>
+
               </div>
             </div>
           </div>
