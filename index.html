@@ -16,16 +16,16 @@
   />
   <style>
     #map {
-      height: 90%;
-      width: 90%;
-    }
-    #search-container {
-      margin: 10px;
-    }
-    #search {
-      padding: 6px;
-      width: 50px;
-    }
+  height: 100%;
+  width: 100%;
+}
+#search-container {
+  margin: 0;
+}
+#search {
+  padding: 6px;
+  width: 150px;
+}
   </style>
 
   </head>
@@ -78,14 +78,15 @@
 
 
           <!-- Charts Placeholder -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-white p-4 rounded shadow h-64">
-              <h2 class="font-semibold mb-2">Client Map</h2>
-              <div class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
-                <div id="search-container">
-    <input type="text" id="search" placeholder="Search employees..." />
+          <div class="bg-white p-4 rounded shadow h-64 flex flex-col">
+  <h2 class="font-semibold mb-2">Client Map</h2>
+  <div class="flex-1 relative">
+    <div id="search-container" class="absolute top-2 left-2 z-10 bg-white bg-opacity-80 rounded p-2 shadow">
+      <input type="text" id="search" placeholder="Search employees..." />
+    </div>
+    <div id="map" class="h-full w-full rounded"></div>
   </div>
-  <div id="map"></div>
+</div>
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
