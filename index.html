@@ -10,6 +10,24 @@
         font-family: 'Inter', sans-serif;
       }
     </style>
+    <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <style>
+    #map {
+      height: 90%;
+      width: 90%;
+    }
+    #search-container {
+      margin: 10px;
+    }
+    #search {
+      padding: 6px;
+      width: 50px;
+    }
+  </style>
+
   </head>
   <body class="bg-gray-50">
     <!-- Main Layout -->
@@ -64,12 +82,61 @@
             <div class="bg-white p-4 rounded shadow h-64">
               <h2 class="font-semibold mb-2">Client Map</h2>
               <div class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
-                [Chart Placeholder]
+                <div id="search-container">
+    <input type="text" id="search" placeholder="Search employees..." />
+  </div>
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    window.onload = function() {
+      // 1️⃣ Sample Employee Data
+      const employees = [
+        { name: "Alice Smith", role: "Manager", lat: -34.6037, lng: -58.3816 },
+        { name: "Bob Johnson", role: "Technician", lat: -23.5505, lng: -46.6333 },
+        { name: "Charlie Brown", role: "Sales", lat: -12.0464, lng: -77.0428 }
+      ];
+
+      // 2️⃣ Initialize the map
+      const map = L.map('map').setView([-15.7801, -47.9292], 4);
+
+      // 3️⃣ Add tile layer
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+
+      // 4️⃣ Add markers
+      let markers = [];
+      employees.forEach(emp => {
+        const marker = L.marker([emp.lat, emp.lng]).addTo(map);
+        marker.bindPopup(`
+          <strong>${emp.name}</strong><br>
+          Role: ${emp.role}
+        `);
+        markers.push({ marker, data: emp });
+      });
+
+      // 5️⃣ Search functionality
+      const searchInput = document.getElementById('search');
+      searchInput.addEventListener('input', function(e) {
+        const query = e.target.value.toLowerCase();
+        markers.forEach(({ marker, data }) => {
+          if (data.name.toLowerCase().includes(query)) {
+            marker.addTo(map);
+          } else {
+            map.removeLayer(marker);
+          }
+        });
+      });
+    };
+  </script>
               </div>
             </div>
           </div>
         </main>
       </div>
     </div>
+    
   </body>
 </html>
