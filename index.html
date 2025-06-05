@@ -33,20 +33,44 @@
     <!-- Main Layout -->
     <div class="flex h-screen">
       <!-- Sidebar -->
-      <aside class="w-20 bg-gray-900 text-white flex flex-col items-center py-4 space-y-6">
+      <aside id="sidebar" class="w-20 bg-gray-900 text-white flex flex-col items-center py-4 space-y-6 transition-all duration-300">
         <!-- Logo -->
         <div class="text-2xl font-bold">🌀</div>
 
         <!-- Icons (static placeholders) -->
-        <nav class="flex flex-col items-center space-y-6 mt-4">
-          <div>🏠</div>
-          <div>📊</div>
-          <div>📦</div>
-          <div>👥</div>
-          <div>📬</div>
-          <div>🗂️</div>
-          <div>🛰️</div>
-          <div>🌐</div>
+        <nav class="flex flex-col items-start space-y-6 mt-4 w-full">
+          <div class="flex items-center space-x-2">
+            <span>🏠</span>
+            <span class="sidebar-label hidden">Home</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span>📊</span>
+            <span class="sidebar-label hidden">Analytics</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span>📦</span>
+            <span class="sidebar-label hidden">Orders</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span>👥</span>
+            <span class="sidebar-label hidden">Customers</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span>📬</span>
+            <span class="sidebar-label hidden">Messages</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span>🗂️</span>
+            <span class="sidebar-label hidden">Reports</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span>🛰️</span>
+            <span class="sidebar-label hidden">Integrations</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span>🌐</span>
+            <span class="sidebar-label hidden">Website</span>
+          </div>
         </nav>
       </aside>
 
@@ -55,7 +79,7 @@
         <!-- Top Navbar -->
         <header class="flex items-center justify-between px-6 py-4 bg-white shadow">
           <div class="flex items-center space-x-4">
-            <button class="text-gray-600 text-xl">☰</button>
+            <button id="sidebar-toggle" class="text-gray-600 text-xl">☰</button>
             <input
               type="text"
               placeholder="Search..."
@@ -132,6 +156,26 @@
       });
     };
   </script>
+  <script>
+  const sidebar = document.getElementById('sidebar');
+  const toggleBtn = document.getElementById('sidebar-toggle');
+
+  toggleBtn.addEventListener('click', () => {
+    if (sidebar.classList.contains('w-20')) {
+      sidebar.classList.remove('w-20');
+      sidebar.classList.add('w-64');
+      // Optionally, show text labels or more content here
+    } else {
+      sidebar.classList.remove('w-64');
+      sidebar.classList.add('w-20');
+      // Optionally, hide text labels or content here
+    }
+
+    document.querySelectorAll('.sidebar-label').forEach(label => {
+      label.classList.toggle('hidden');
+    });
+  });
+</script>
               </div>
             </div>
           </div>
