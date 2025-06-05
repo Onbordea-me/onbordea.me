@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <!-- Main Layout -->
+    <div class="flex h-screen">
+      <!-- Sidebar -->
+      <aside class="w-20 bg-gray-900 text-white flex flex-col items-center py-4 space-y-6">
+        <!-- Logo -->
+        <div class="text-2xl font-bold">🌀</div>
+
+        <!-- Icons (static placeholders) -->
+        <nav class="flex flex-col items-center space-y-6 mt-4">
+          <div>🏠</div>
+          <div>📊</div>
+          <div>📦</div>
+          <div>👥</div>
+          <div>📬</div>
+          <div>🗂️</div>
+          <div>🛰️</div>
+          <div>🌐</div>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <div class="flex-1 flex flex-col">
+        <!-- Top Navbar -->
+        <header class="flex items-center justify-between px-6 py-4 bg-white shadow">
+          <div class="flex items-center space-x-4">
+            <button class="text-gray-600 text-xl">☰</button>
+            <input
+              type="text"
+              placeholder="Search..."
+              class="px-3 py-1 border rounded-md text-sm focus:outline-none"
+            />
+            <button class="bg-indigo-500 text-white px-4 py-1 rounded text-sm">Search</button>
+          </div>
+
+          <div class="flex items-center space-x-4">
+            <span class="text-sm text-gray-700">English ⬇️</span>
+            <span>🔔</span>
+            <span>⚙️</span>
+            <span>🌙</span>
+            <span class="flex items-center space-x-2">
+              <img src="https://via.placeholder.com/30" class="rounded-full" />
+              <span class="text-sm">Dominic Keller</span>
+            </span>
+          </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <main class="p-6 overflow-y-auto">
+          <h1 class="text-2xl font-bold mb-6">Dashboard</h1>
+
+          <!-- Top Stat Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white p-4 rounded shadow">
+              <p class="text-sm text-gray-500">Customers</p>
+              <h2 class="text-xl font-semibold">36,254</h2>
+              <p class="text-green-500 text-sm">↑ 5.27% since last month</p>
+            </div>
+            <div class="bg-white p-4 rounded shadow">
+              <p class="text-sm text-gray-500">Orders</p>
+              <h2 class="text-xl font-semibold">5,543</h2>
+              <p class="text-red-500 text-sm">↓ 1.08% since last month</p>
+            </div>
+            <div class="bg-white p-4 rounded shadow">
+              <p class="text-sm text-gray-500">Revenue</p>
+              <h2 class="text-xl font-semibold">$6,254</h2>
+              <p class="text-red-500 text-sm">↓ 7.00% since last month</p>
+            </div>
+            <div class="bg-white p-4 rounded shadow">
+              <p class="text-sm text-gray-500">Growth</p>
+              <h2 class="text-xl font-semibold">+30.56%</h2>
+              <p class="text-green-500 text-sm">↑ 4.87% since last month</p>
+            </div>
+          </div>
+
+          <!-- Charts Placeholder -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white p-4 rounded shadow h-64">
+              <h2 class="font-semibold mb-2">Projections vs Actuals</h2>
+              <div class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
+                [Chart Placeholder]
+              </div>
+            </div>
+            <div class="bg-white p-4 rounded shadow h-64">
+              <h2 class="font-semibold mb-2">Revenue</h2>
+              <div class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
+                [Line Graph Placeholder]
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
