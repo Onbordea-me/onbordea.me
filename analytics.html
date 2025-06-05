@@ -1,11 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <title>ONbordea Analytics</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    
+<body class="bg-gray-100 text-gray-800">
+  <div class="p-6 space-y-6">
+
+    <h1 class="text-3xl font-bold">Onbordea Dashboard</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Shipment Tracking -->
+      <div class="bg-white rounded-xl p-4 shadow">
+        <h2 class="text-lg font-semibold mb-2">Shipment Tracking</h2>
+        <canvas class="h-32 w-full bg-gray-100 rounded">[Chart]</canvas>
+        <table class="w-full mt-2 text-sm">
+          <thead>
+            <tr class="text-left text-gray-500">
+              <th>Carrier</th>
+              <th>Status</th>
+              <th>ETA</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>DHL</td>
+              <td class="text-green-600">In Transit</td>
+              <td>2d</td>
+            </tr>
+            <tr>
+              <td>FedEx</td>
+              <td class="text-yellow-500">Pending</td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Collection Tracking -->
+      <div class="bg-white rounded-xl p-4 shadow">
+        <h2 class="text-lg font-semibold mb-2">Collection Status</h2>
+        <canvas class="h-32 w-full bg-gray-100 rounded">[Chart]</canvas>
+        <ul class="mt-2 text-sm space-y-1">
+          <li>💼 Collected: 132</li>
+          <li>📍 Awaiting Pickup: 27</li>
+          <li>❌ Failed Attempts: 6</li>
+        </ul>
+      </div>
+
+      <!-- Notifications Sent -->
+      <div class="bg-white rounded-xl p-4 shadow">
+        <h2 class="text-lg font-semibold mb-2">Notification Logs</h2>
+        <div class="text-sm space-y-1">
+          <p>Email Notifications: <span class="font-medium">1,450</span></p>
+          <p>Platform Alerts: <span class="font-medium">810</span></p>
+          <p>SMS: <span class="font-medium">392</span></p>
+        </div>
+        <button class="mt-3 text-xs text-indigo-600 underline">View Logs</button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Delivery Performance -->
+      <div class="bg-white rounded-xl p-4 shadow">
+        <h2 class="text-lg font-semibold mb-2">Delivery Time Analytics</h2>
+        <table class="w-full text-sm mt-2">
+          <thead class="text-gray-500">
+            <tr>
+              <th>Duration</th>
+              <th>Deliveries</th>
+              <th>%</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>0–2 Days</td><td>520</td><td>52%</td></tr>
+            <tr><td>3–5 Days</td><td>310</td><td>31%</td></tr>
+            <tr><td>6–10 Days</td><td>110</td><td>11%</td></tr>
+            <tr><td>10+ Days</td><td>60</td><td>6%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Cost Reports -->
+      <div class="bg-white rounded-xl p-4 shadow">
+        <h2 class="text-lg font-semibold mb-2">Monthly Cost by Department</h2>
+        <table class="w-full text-sm mt-2">
+          <thead class="text-gray-500">
+            <tr><th>Department</th><th>Cost ($)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Sales</td><td>$2,450</td></tr>
+            <tr><td>Ops</td><td>$3,110</td></tr>
+            <tr><td>Returns</td><td>$1,030</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- User Feedback -->
+      <div class="bg-white rounded-xl p-4 shadow">
+        <h2 class="text-lg font-semibold mb-2">User Satisfaction</h2>
+        <ul class="text-sm space-y-1">
+          <li>NPS Score: <span class="font-medium text-green-600">+62</span></li>
+          <li>⭐ Average Rating: 4.3 / 5</li>
+          <li>📝 Feedback Submissions: 238</li>
+        </ul>
+        <button class="mt-3 text-xs text-indigo-600 underline">View Feedback</button>
+      </div>
+    </div>
+
+    <!-- Export Section -->
+    <div class="flex justify-end">
+      <button class="px-4 py-2 bg-indigo-600 text-white rounded shadow hover:bg-indigo-500 text-sm">
+        Export Full Report
+      </button>
+    </div>
+
+  </div>
 </body>
 </html>

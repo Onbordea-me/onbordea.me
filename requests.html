@@ -1,11 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Onbordea | Service Requests</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('-translate-x-full');
+    }
+  </script>
 </head>
-<body>
-    
+<body class="bg-gray-100 flex min-h-screen text-gray-800 font-sans">
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="bg-slate-800 text-white w-64 fixed inset-y-0 left-0 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-50">
+    <div class="p-6">
+      <h1 class="text-2xl font-semibold text-blue-400 mb-8">Onbordea</h1>
+      <nav class="space-y-4">
+        <a href="index.html" class="block text-gray-300 hover:text-white">Dashboard</a>
+        <a href="employees.html" class="block text-gray-300 hover:text-white">Employees</a>
+        <a href="equipment.html" class="block text-gray-300 hover:text-white">Equipment</a>
+        <a href="requests.html" class="block text-white font-semibold">Requests</a>
+        <a href="analytics.html" class="block text-gray-300 hover:text-white">Analytics</a>
+        <a href="reports.html" class="block text-gray-300 hover:text-white">Report</a>
+        <a href="settings.html" class="block text-gray-300 hover:text-white">Settings</a>
+        <a href="support.html" class="block text-gray-300 hover:text-white">Support Center</a>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <div class="flex-1 flex flex-col md:ml-64 w-full">
+    <!-- Topbar -->
+    <header class="bg-white shadow px-4 py-4 flex items-center justify-between md:justify-start">
+      <button onclick="toggleSidebar()" class="text-slate-800 md:hidden focus:outline-none">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+      <h2 class="ml-4 text-xl font-semibold">Manage Your Service Requests</h2>
+    </header>
+
+    <!-- Page content -->
+    <main class="p-6 space-y-6">
+      <div>
+        <input type="text" placeholder="Search..." class="w-full max-w-md p-3 rounded-lg border border-gray-300 shadow-sm focus:ring focus:ring-blue-100 focus:outline-none" />
+      </div>
+
+      <!-- Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Card -->
+        <div class="bg-white rounded-lg p-5 shadow">
+          <h3 class="text-lg font-semibold mb-1">📦 New Equipment Request</h3>
+          <p class="text-gray-600 mb-3">Request new delivery hardware or tools.</p>
+          <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Request</button>
+        </div>
+
+        <div class="bg-white rounded-lg p-5 shadow">
+          <h3 class="text-lg font-semibold mb-1">🔁 Equipment Change Request</h3>
+          <p class="text-gray-600 mb-3">Swap or upgrade your existing equipment.</p>
+          <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Request</button>
+        </div>
+
+        <div class="bg-white rounded-lg p-5 shadow">
+          <h3 class="text-lg font-semibold mb-1">📤 Equipment Return (Offboarding)</h3>
+          <p class="text-gray-600 mb-3">Return devices during offboarding.</p>
+          <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Request</button>
+        </div>
+
+        <div class="bg-white rounded-lg p-5 shadow">
+          <h3 class="text-lg font-semibold mb-1">🛠️ On-Demand Support Request</h3>
+          <p class="text-gray-600 mb-3">Get help for any immediate logistics issues.</p>
+          <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Request</button>
+        </div>
+
+        <div class="bg-white rounded-lg p-5 shadow">
+          <h3 class="text-lg font-semibold mb-1">📷 Upload Photos / Docs</h3>
+          <p class="text-gray-600 mb-3">Submit required images or paperwork for a request.</p>
+          <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Request</button>
+        </div>
+      </div>
+    </main>
+  </div>
 </body>
 </html>
