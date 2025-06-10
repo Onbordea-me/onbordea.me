@@ -1,11 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
-</html>
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Onbordea.me - Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-50">
+    <div class="flex h-screen">
+      <!-- Sidebar -->
+      <aside id="sidebar" class="w-20 bg-gray-900 text-white flex flex-col items-center py-4 space-y-6 transition-all duration-300">
+        <img id="logo" src="assets/logo.png">
+        <nav id="sidebar-nav" class="flex flex-col items-center space-y-6 mt-4 w-full">
+          <a href="employees.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
+            <span>👥</span>
+            <span class="sidebar-label hidden">Employees</span>
+          </a>
+          <a href="equipment.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
+            <span>📦</span>
+            <span class="sidebar-label hidden">Equipment</span>
+          </a>
+          <a href="requests.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
+            <span>📬</span>
+            <span class="sidebar-label hidden">Requests</span>
+          </a>
+          <a href="analytics.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
+            <span>📊</span>
+            <span class="sidebar-label hidden">Analytics</span>
+          </a>
+          <a href="reports.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
+            <span>🗂️</span>
+            <span class="sidebar-label hidden">Reports</span>
+          </a>
+          <a href="settings.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition bg-gray-800">
+            <span>🛰️</span>
+            <span class="sidebar-label hidden">Settings</span>
+          </a>
+          <a href="support.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
+            <span>🌐</span>
+            <span class="sidebar-label hidden">Support</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <div class="flex-1 flex flex-col">
+        <!-- Navbar -->
+        <header class="flex items-center justify-between px-6 py-4 bg-white shadow">
+          <div class="flex items-center space-x-4">
+            <button id="sidebar-toggle" class="text-gray-600 text-xl">☰</button>
+            <h1 class="text-lg font-semibold">Settings</h1>
+          </div>
+          <div class="flex items-center space-x-4">
+            <span class="text-sm text-gray-700">English ⬇️</span>
+            <span>🔔</span>
+            <span>⚙️</span>
+            <span>🌙</span>
+            <span class="flex items-center space-x-2">
+              <img src="https://via.placeholder.com/30" class="rounded-full" />
+              <span class="text-sm">Dominic Keller</span>
+            </span>
+          </div>
+        </header>
+
+        <!-- Settings Page -->
+        <main class="flex-1 p-6 overflow-y-auto">
+          <h2 class="text-xl font-semibold text-gray-800 mb-6">Settings</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <!-- Profile Settings -->
+            <div class="bg-white rounded-lg shadow p-4">
+              <h3 class="text-lg font-semibold text-gray-800 mb-4">Profile</h3>
+              <div class="space-y-3 text-sm">
+                <div>
+                  <label class="block text-gray-700">Name</label>
+                  <input type="text" class="w-full border px-2 py-1 rounded" value="Dominic Keller" />
+                </div>
+                <div>
+                  <label class="block text-gray-700">Email</label>
+                  <input type="email" class="w-full border px-2 py-1 rounded" value="dominic@email.com" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="bg-white rounded-lg shadow p-4">
+              <h3 class="text-lg font-semibold text-gray-800 mb-4">Notifications</h3>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between items-center">
+                  <span>Email Alerts</span>
+                  <input type="checkbox" checked class="toggle-switch" />
+                </div>
+                <div class="flex justify-between items-center">
+                  <span>SMS Notifications</span>
+                  <input type="checkbox" class="toggle-switch" />
+                </div>
+                <div class="flex justify-between items-center">
+                  <span>Weekly Reports</span>
+                  <input type="checkbox" checked class="toggle-switch" />
+                </div>
+              </div>
+            </div>
+
+            <!-- System Settings -->
+            <div class="bg-white rounded-lg shadow p-4">
+              <h3 class="text-lg font-semibold text-gray-800 mb-4">System Preferences</h3>
+              <div cla

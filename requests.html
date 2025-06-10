@@ -1,88 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Onbordea | Service Requests</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Onbordea.me - Service Requests</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      sidebar.classList.toggle('-translate-x-full');
-    }
-  </script>
 </head>
-<body class="bg-gray-100 flex min-h-screen text-gray-800 font-sans">
-
-  <!-- Sidebar -->
-  <aside id="sidebar" class="bg-slate-800 text-white w-64 fixed inset-y-0 left-0 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-50">
-    <div class="p-6">
-      <h1 class="text-2xl font-semibold text-blue-400 mb-8">Onbordea</h1>
-      <nav class="space-y-4">
-        <a href="index.html" class="block text-gray-300 hover:text-white">Dashboard</a>
-        <a href="employees.html" class="block text-gray-300 hover:text-white">Employees</a>
-        <a href="equipment.html" class="block text-gray-300 hover:text-white">Equipment</a>
-        <a href="requests.html" class="block text-white font-semibold">Requests</a>
-        <a href="analytics.html" class="block text-gray-300 hover:text-white">Analytics</a>
-        <a href="reports.html" class="block text-gray-300 hover:text-white">Report</a>
-        <a href="settings.html" class="block text-gray-300 hover:text-white">Settings</a>
-        <a href="support.html" class="block text-gray-300 hover:text-white">Support Center</a>
+<body class="bg-gray-50 text-gray-800">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-20 bg-gray-900 text-white flex flex-col items-center py-4 space-y-6 transition-all duration-300">
+      <img id="logo" src="assets/logo.png">
+      <nav id="sidebar-nav" class="flex flex-col items-center space-y-6 mt-4 w-full">
+        <a href="employees.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
+          <span>👥</span>
+          <span class="sidebar-label hidden">Employees</span>
+        </a>
+        <a href="equipment.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
+          <span>📦</span>
+          <span class="sidebar-label hidden">Equipment</span>
+        </a>
+        <a href="requests.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition bg-gray-800">
+          <span>📬</span>
+          <span class="sidebar-label hidden">Requests</span>
+        </a>
+        <a href="analytics.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
+          <span>📊</span>
+          <span class="sidebar-label hidden">Analytics</span>
+        </a>
+        <a href="reports.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
+          <span>🗂️</span>
+          <span class="sidebar-label hidden">Reports</span>
+        </a>
+        <a href="settings.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
+          <span>🛰️</span>
+          <span class="sidebar-label hidden">Settings</span>
+        </a>
+        <a href="support.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
+          <span>🌐</span>
+          <span class="sidebar-label hidden">Support</span>
+        </a>
       </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+      <!-- Navbar -->
+      <header class="flex items-center justify-between px-6 py-4 bg-white shadow">
+        <div class="flex items-center space-x-4">
+          <button id="sidebar-toggle" class="text-gray-600 text-xl">☰</button>
+          <h1 class="text-lg font-semibold">Service Requests</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+          <span class="text-sm text-gray-700">English ⬇️</span>
+          <span>🔔</span>
+          <span>⚙️</span>
+          <span>🌙</span>
+          <span class="flex items-center space-x-2">
+            <img src="https://via.placeholder.com/30" class="rounded-full" />
+            <span class="text-sm">Dominic Keller</span>
+          </span>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <main class="flex-1 p-6 overflow-y-auto">
+        <div class="mb-6">
+          <input type="text" placeholder="Search requests..." class="w-full max-w-md p-3 rounded-lg border border-gray-300 shadow-sm focus:ring focus:ring-blue-100 focus:outline-none" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Request Card -->
+          <div class="bg-white p-5 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold mb-2">📦 New Equipment Request</h3>
+            <p class="text-gray-600 mb-4">Request new delivery hardware or tools.</p>
+            <button class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Request</button>
+          </div>
+
+          <div class="bg-white p-5 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold mb-2">🔁 Equipment Change Request</h3>
+            <p class="text-gray-600 mb-4">Swap or upgrade your existing equipment.</p>
+            <button class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Request</button>
+          </div>
+
+          <div class="bg-white p-5 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold mb-2">📤 Equipment Return (Offboarding)</h3>
+            <p class="text-gray-600 mb-4">Return devices during offboarding.</p>
+            <button class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Request</button>
+          </div>
+
+          <div class="bg-white p-5 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold mb-2">🛠️ On-Demand Support Request</h3>
+            <p class="text-gray-600 mb-4">Get help for any immediate logistics issues.</p>
+            <button class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Request</button>
+          </div>
+
+          <div class="bg-white p-5 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold mb-2">📷 Upload Photos / Docs</h3>
+            <p class="text-gray-600 mb-4">Submit required images or paperwork for a request.</p>
+            <button class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Request</button>
+          </div>
+        </div>
+      </main>
     </div>
-  </aside>
-
-  <!-- Main content -->
-  <div class="flex-1 flex flex-col md:ml-64 w-full">
-    <!-- Topbar -->
-    <header class="bg-white shadow px-4 py-4 flex items-center justify-between md:justify-start">
-      <button onclick="toggleSidebar()" class="text-slate-800 md:hidden focus:outline-none">
-        <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
-        </svg>
-      </button>
-      <h2 class="ml-4 text-xl font-semibold">Manage Your Service Requests</h2>
-    </header>
-
-    <!-- Page content -->
-    <main class="p-6 space-y-6">
-      <div>
-        <input type="text" placeholder="Search..." class="w-full max-w-md p-3 rounded-lg border border-gray-300 shadow-sm focus:ring focus:ring-blue-100 focus:outline-none" />
-      </div>
-
-      <!-- Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Card -->
-        <div class="bg-white rounded-lg p-5 shadow">
-          <h3 class="text-lg font-semibold mb-1">📦 New Equipment Request</h3>
-          <p class="text-gray-600 mb-3">Request new delivery hardware or tools.</p>
-          <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Request</button>
-        </div>
-
-        <div class="bg-white rounded-lg p-5 shadow">
-          <h3 class="text-lg font-semibold mb-1">🔁 Equipment Change Request</h3>
-          <p class="text-gray-600 mb-3">Swap or upgrade your existing equipment.</p>
-          <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Request</button>
-        </div>
-
-        <div class="bg-white rounded-lg p-5 shadow">
-          <h3 class="text-lg font-semibold mb-1">📤 Equipment Return (Offboarding)</h3>
-          <p class="text-gray-600 mb-3">Return devices during offboarding.</p>
-          <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Request</button>
-        </div>
-
-        <div class="bg-white rounded-lg p-5 shadow">
-          <h3 class="text-lg font-semibold mb-1">🛠️ On-Demand Support Request</h3>
-          <p class="text-gray-600 mb-3">Get help for any immediate logistics issues.</p>
-          <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Request</button>
-        </div>
-
-        <div class="bg-white rounded-lg p-5 shadow">
-          <h3 class="text-lg font-semibold mb-1">📷 Upload Photos / Docs</h3>
-          <p class="text-gray-600 mb-3">Submit required images or paperwork for a request.</p>
-          <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Request</button>
-        </div>
-      </div>
-    </main>
   </div>
+
+  <!-- Sidebar Toggle Script -->
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('sidebar-toggle');
+    const sidebarNav = document.getElementById('sidebar-nav');
+
+    toggleBtn.addEventListener('click', () => {
+      if (sidebar.classList.contains('w-20')) {
+        sidebar.classList.remove('w-20');
+        sidebar.classList.add('w-64');
+        sidebarNav.classList.remove('items-center');
+        sidebarNav.classList.add('items-start');
+      } else {
+        sidebar.classList.remove('w-64');
+        sidebar.classList.add('w-20');
+        sidebarNav.classList.remove('items-start');
+        sidebarNav.classList.add('items-center');
+      }
+      document.querySelectorAll('.sidebar-label').forEach(label => {
+        label.classList.toggle('hidden');
+      });
+    });
+  </script>
 </body>
 </html>

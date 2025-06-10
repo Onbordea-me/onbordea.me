@@ -1,11 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Onbordea.me - Equipment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <!-- Main Layout -->
+    <div class="flex h-screen">
+      <!-- Sidebar -->
+      <aside id="sidebar" class="w-20 bg-gray-900 text-white flex flex-col items-center py-4 space-y-6 transition-all duration-300">
+        <img id="logo" src="assets/logo.png">
+        <nav id="sidebar-nav" class="flex flex-col items-center space-y-6 mt-4 w-full">
+          <a href="employees.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
+            <span>👥</span>
+            <span class="sidebar-label hidden">Employees</span>
+          </a>
+          <a href="equipment.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
+            <span>📦</span>
+            <span class="sidebar-label hidden">Equipment</span>
+          </a>
+          <a href="requests.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
+            <span>📬</span>
+            <span class="sidebar-label hidden">Requests</span>
+          </a>
+          <a href="analytics.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
+            <span>📊</span>
+            <span class="sidebar-label hidden">Analytics</span>
+          </a>
+          <a href="reports.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
+            <span>🗂️</span>
+            <span class="sidebar-label hidden">Reports</span>
+          </a>
+          <a href="settings.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
+            <span>🛰️</span>
+            <span class="sidebar-label hidden">Settings</span>
+          </a>
+          <a href="support.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
+            <span>🌐</span>
+            <span class="sidebar-label hidden">Support Center</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <div class="flex-1 flex flex-col">
+        <!-- Top Navbar -->
+        <header class="flex items-center justify-between px-6 py-4 bg-white shadow">
+          <div class="flex items-center space-x-4">
+            <button id="sidebar-toggle" class="text-gray-600 text-xl">☰</button>
+            <input type="text" placeholder="Search equipment..." class="px-3 py-1 border rounded-md text-sm focus:outline-none" />
+            <button class="bg-indigo-500 text-white px-4 py-1 rounded text-sm">Search</button>
+          </div>
+          <div class="flex items-center space-x-4">
+            <span class="text-sm text-gray-700">English ⬇️</span>
+            <span>🔔</span>
+            <span>⚙️</span>
+            <span>🌙</span>
+            <span class="flex items-center space-x-2">
+              <img src="https://via.placeholder.com/30" class="rounded-full" />
+              <span class="text-sm">Dominic Keller</span>
+            </span>
+          </div>
+        </header>
+
+        <!-- Equipment Management Section -->
+        <main class="flex-1 p-6 overflow-y-auto">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold text-gray-800">Equipment Inventory</h2>
+            <button class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 text-sm">Add New Equipment</button>
+          </div>
+
+          <!-- Equipment Categories -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Computers -->
+            <div class="bg-white rounded-lg shadow p-4">
+              <h3 class="text-lg font-semibold text-gray-800 mb-2">💻 Computers</h3>
+              <ul class="text-sm text-gray-700 space-y-1">
+                <li>PC - Stock: 12 - ETA: 2 days</li>
+                <li>Laptop - Stock: 7 - ETA: 5 days</li>
+                <li>Tablet - Stock: 5 - ETA: 3 days</li>
+              </ul>
+            </div>
+
+            <!-- Furniture -->
+            <div class="bg-white rounded-lg shadow p-4">
+              <h3 class="text-lg font-semibold text-gray-800 mb-2">🪑 Furniture</h3>
+              <ul class="text-sm text-gray-700 space-y-1">
+                <li>Desk - Stock: 10 - ETA: 4 days</li>
+                <li>Chair - Stock: 15 - ETA: 2 days</li>
+                <li>Storage Unit - Stock: 3 - ETA: 7 days</li>
+              </ul>
+            </div>
+
+            <!-- Software Licenses -->
+            <div class="bg-white rounded-lg shadow p-4">
+              <h3 class="text-lg font-semibold text-gray-800 mb-2">🧾 Software</h3>
+              <ul class="text-sm text-gray-700 space-y-1">
+                <li>Office Suite - Stock: Unlimited - ETA: Instant</li>
+                <li>Design Tools - Stock: 20 - ETA: Instant</li>
+                <li>Antivirus - Stock: 50 - ETA: Instant</li>
+              </ul>
+            </div>
+
+            <!-- Client-Specific Catalog (Example) -->
+            <div class="bg-white rounded-lg shadow p-4">
+              <h3 class="text-lg font-semibold text-gray-800 mb-2">🏢 Client: Acme Corp</h3>
+              <ul class="text-sm text-gray-700 space-y-1">
+                <li>Custom Laptop - Stock: 3 - ETA: 7 days</li>
+                <li>Premium Desk Chair - Stock: 2 - ETA: 6 days</li>
+              </ul>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      const sidebar = document.getElementById('sidebar');
+      const toggleBtn = document.getElementById('sidebar-toggle');
+      const sidebarNav = document.getElementById('sidebar-nav');
+
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('w-20');
+        sidebar.classList.toggle('w-64');
+        sidebarNav.classList.toggle('items-center');
+        sidebarNav.classList.toggle('items-start');
+        document.querySelectorAll('.sidebar-label').forEach(label => {
+          label.classList.toggle('hidden');
+        });
+      });
+    </script>
+  </body>
 </html>
