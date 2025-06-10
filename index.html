@@ -2,79 +2,111 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Onbordea.me </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Onbordea.me</title>
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Mapbox GL JS CSS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet" />
+
     <style>
       body {
         font-family: 'Inter', sans-serif;
       }
+      #map {
+        width: 100%;
+        height: 100%;
+        border-radius: 0.375rem; /* rounded corners matching Tailwind rounded */
+      }
+      #search-container {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        z-index: 10;
+        background: rgba(255 255 255 / 0.9);
+        border-radius: 0.375rem;
+        padding: 0.5rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      }
+      #search {
+        padding: 6px 10px;
+        width: 180px;
+        border: 1px solid #d1d5db; /* Tailwind gray-300 */
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+      }
     </style>
-    <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
-  <style>
-    #map {
-  height: 100%;
-  width: 100%;
-}
-#search-container {
-  margin: 0;
-}
-#search {
-  padding: 6px;
-  width: 150px;
-}
-  </style>
-
   </head>
   <body class="bg-gray-50">
-    <!-- Main Layout -->
     <div class="flex h-screen">
       <!-- Sidebar -->
-      <aside id="sidebar" class="w-20 bg-gray-900 text-white flex flex-col items-center py-4 space-y-6 transition-all duration-300">
+      <aside
+        id="sidebar"
+        class="w-20 bg-gray-900 text-white flex flex-col items-center py-4 space-y-6 transition-all duration-300"
+      >
         <!-- Logo -->
-        <a href="index.html" >
-          <img id="logo" src="assets/logo.png">
-          </a>
-        <!-- Icons (static placeholders) -->
-        <nav id="sidebar-nav" class="flex flex-col items-center space-y-6 mt-4 w-full">
-    <a href="employees.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
-    <span>👥</span>
-    <span class="sidebar-label hidden">Employees</span>
-  </a>
-    <a href="equipment.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
-    <span>📦</span>
-    <span class="sidebar-label hidden">Equipment</span>
-  </a>
-    <a href="requests.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
-    <span>📬</span>
-    <span class="sidebar-label hidden">Requests</span>
-  </a>
-  <a href="analytics.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
-    <span>📊</span>
-    <span class="sidebar-label hidden">Analytics</span>
-  </a>
-  <a href="reports.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
-    <span>🗂️</span>
-    <span class="sidebar-label hidden">Reports</span>
-  </a>
-  <a href="settings.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
-    <span>🛰️</span>
-    <span class="sidebar-label hidden">Settings</span>
-  </a>
-  <a href="support.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
-    <span>🌐</span>
-    <span class="sidebar-label hidden">Support Center</span>
-  </a>
-</nav>
+        <a href="index.html">
+          <img id="logo" src="assets/logo.png" alt="Logo" />
+        </a>
+
+        <!-- Navigation -->
+        <nav
+          id="sidebar-nav"
+          class="flex flex-col items-center space-y-6 mt-4 w-full"
+        >
+          <a
+            href="employees.html"
+            class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition"
+            ><span>👥</span>
+            <span class="sidebar-label hidden">Employees</span></a
+          >
+          <a
+            href="equipment.html"
+            class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition"
+            ><span>📦</span>
+            <span class="sidebar-label hidden">Equipment</span></a
+          >
+          <a
+            href="requests.html"
+            class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition"
+            ><span>📬</span>
+            <span class="sidebar-label hidden">Requests</span></a
+          >
+          <a
+            href="analytics.html"
+            class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition"
+            ><span>📊</span>
+            <span class="sidebar-label hidden">Analytics</span></a
+          >
+          <a
+            href="reports.html"
+            class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition"
+            ><span>🗂️</span>
+            <span class="sidebar-label hidden">Reports</span></a
+          >
+          <a
+            href="settings.html"
+            class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition"
+            ><span>🛰️</span>
+            <span class="sidebar-label hidden">Settings</span></a
+          >
+          <a
+            href="support.html"
+            class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition"
+            ><span>🌐</span>
+            <span class="sidebar-label hidden">Support Center</span></a
+          >
+        </nav>
       </aside>
 
       <!-- Main Content -->
       <div class="flex-1 flex flex-col">
         <!-- Top Navbar -->
-        <header class="flex items-center justify-between px-6 py-4 bg-white shadow">
+        <header
+          class="flex items-center justify-between px-6 py-4 bg-white shadow"
+        >
           <div class="flex items-center space-x-4">
             <button id="sidebar-toggle" class="text-gray-600 text-xl">☰</button>
             <input
@@ -82,7 +114,11 @@
               placeholder="Search..."
               class="px-3 py-1 border rounded-md text-sm focus:outline-none"
             />
-            <button class="bg-indigo-500 text-white px-4 py-1 rounded text-sm">Search</button>
+            <button
+              class="bg-indigo-500 text-white px-4 py-1 rounded text-sm"
+            >
+              Search
+            </button>
           </div>
 
           <div class="flex items-center space-x-4">
@@ -91,99 +127,121 @@
             <span>⚙️</span>
             <span>🌙</span>
             <span class="flex items-center space-x-2">
-              <img src="https://via.placeholder.com/30" class="rounded-full" />
+              <img
+                src="https://via.placeholder.com/30"
+                class="rounded-full"
+                alt="User avatar"
+              />
               <span class="text-sm">Dominic Keller</span>
             </span>
           </div>
         </header>
 
-
-          <!-- Charts Placeholder -->
-          <div class="bg-white p-4 rounded shadow flex flex-col flex-1 min-h-0">
-  <h2 class="font-semibold mb-2">Client Map</h2>
-  <div class="flex-1 relative">
-    <div id="search-container" class="absolute top-2 left-2 z-10 bg-white bg-opacity-80 rounded p-2 shadow">
-      <input type="text" id="search" placeholder="Search employees..." />
-    </div>
-    <div id="map" class="h-full w-full rounded"></div>
-  </div>
-</div>
-
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script>
-    window.onload = function() {
-      // 1️⃣ Sample Employee Data
-      const employees = [
-        { name: "Alice Smith", role: "Manager", lat: -34.6037, lng: -58.3816 },
-        { name: "Bob Johnson", role: "Technician", lat: -23.5505, lng: -46.6333 },
-        { name: "Charlie Brown", role: "Sales", lat: -12.0464, lng: -77.0428 }
-      ];
-
-      // 2️⃣ Initialize the map
-      const map = L.map('map').setView([-15.7801, -47.9292], 4);
-
-      // 3️⃣ Add tile layer
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-      }).addTo(map);
-
-      // 4️⃣ Add markers
-      let markers = [];
-      employees.forEach(emp => {
-        const marker = L.marker([emp.lat, emp.lng]).addTo(map);
-        marker.bindPopup(`
-          <strong>${emp.name}</strong><br>
-          Role: ${emp.role}
-        `);
-        markers.push({ marker, data: emp });
-      });
-
-      // 5️⃣ Search functionality
-      const searchInput = document.getElementById('search');
-      searchInput.addEventListener('input', function(e) {
-        const query = e.target.value.toLowerCase();
-        markers.forEach(({ marker, data }) => {
-          if (data.name.toLowerCase().includes(query)) {
-            marker.addTo(map);
-          } else {
-            map.removeLayer(marker);
-          }
-        });
-      });
-    };
-  </script>
-
-  <script>
-  const sidebar = document.getElementById('sidebar');
-  const toggleBtn = document.getElementById('sidebar-toggle');
-  const sidebarNav = document.getElementById('sidebar-nav');
-
-  toggleBtn.addEventListener('click', () => {
-    if (sidebar.classList.contains('w-20')) {
-      sidebar.classList.remove('w-20');
-      sidebar.classList.add('w-64');
-      sidebarNav.classList.remove('items-center');
-      sidebarNav.classList.add('items-start');
-    } else {
-      sidebar.classList.remove('w-64');
-      sidebar.classList.add('w-20');
-      sidebarNav.classList.remove('items-start');
-      sidebarNav.classList.add('items-center');
-    }
-
-    document.querySelectorAll('.sidebar-label').forEach(label => {
-      label.classList.toggle('hidden');
-    });
-  });
-</script>
-
-              </div>
+        <!-- Client Map Section -->
+        <main class="bg-white p-4 rounded shadow flex flex-col flex-1 min-h-0 relative">
+          <h2 class="font-semibold mb-2">Client Map</h2>
+          <div class="flex-1 relative min-h-[400px]">
+            <div id="search-container">
+              <input
+                type="text"
+                id="search"
+                placeholder="Search employees..."
+                autocomplete="off"
+              />
             </div>
+            <div id="map"></div>
           </div>
         </main>
       </div>
     </div>
-    
+
+    <!-- Mapbox GL JS -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
+    <script>
+      // Replace with your Mapbox access token
+      mapboxgl.accessToken = 'pk.eyJ1Ijoib25ib3JkZWEiLCJhIjoiY21icXM3aDI3MDJvOTJrcHZqenp3bW1wOSJ9.lQcEYdGkOfDzQe4Sl8L3TQ';
+
+      // Sample employee data
+      const employees = [
+        { name: 'Alice Smith', role: 'Manager', lat: -34.6037, lng: -58.3816 },
+        { name: 'Bob Johnson', role: 'Technician', lat: -23.5505, lng: -46.6333 },
+        { name: 'Charlie Brown', role: 'Sales', lat: -12.0464, lng: -77.0428 },
+      ];
+
+      // Initialize the map
+      const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center: [-47.9292, -15.7801],
+        zoom: 4,
+      });
+
+      // Store markers for filtering
+      let markers = [];
+
+      // Function to add markers to the map
+      function addMarkers(data) {
+        // Clear existing markers
+        markers.forEach(({ marker }) => marker.remove());
+        markers = [];
+
+        data.forEach((emp) => {
+          const el = document.createElement('div');
+          el.className = 'marker';
+          el.style.backgroundImage =
+            'url(https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png)';
+          el.style.width = '30px';
+          el.style.height = '40px';
+          el.style.backgroundSize = '100%';
+
+          const marker = new mapboxgl.Marker(el)
+            .setLngLat([emp.lng, emp.lat])
+            .setPopup(
+              new mapboxgl.Popup({ offset: 25 }).setHTML(
+                `<strong>${emp.name}</strong><br/>Role: ${emp.role}`
+              )
+            )
+            .addTo(map);
+
+          markers.push({ marker, data: emp });
+        });
+      }
+
+      // Initially add all markers
+      addMarkers(employees);
+
+      // Search filtering
+      const searchInput = document.getElementById('search');
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        const filtered = employees.filter((emp) =>
+          emp.name.toLowerCase().includes(query)
+        );
+        addMarkers(filtered);
+      });
+
+      // Sidebar toggle logic
+      const sidebar = document.getElementById('sidebar');
+      const toggleBtn = document.getElementById('sidebar-toggle');
+      const sidebarNav = document.getElementById('sidebar-nav');
+
+      toggleBtn.addEventListener('click', () => {
+        if (sidebar.classList.contains('w-20')) {
+          sidebar.classList.remove('w-20');
+          sidebar.classList.add('w-64');
+          sidebarNav.classList.remove('items-center');
+          sidebarNav.classList.add('items-start');
+        } else {
+          sidebar.classList.remove('w-64');
+          sidebar.classList.add('w-20');
+          sidebarNav.classList.remove('items-start');
+          sidebarNav.classList.add('items-center');
+        }
+
+        document.querySelectorAll('.sidebar-label').forEach((label) => {
+          label.classList.toggle('hidden');
+        });
+      });
+    </script>
   </body>
 </html>
