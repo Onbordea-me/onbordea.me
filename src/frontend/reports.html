@@ -19,7 +19,7 @@
       <!-- Sidebar -->
       <aside id="sidebar" class="w-20 bg-gray-900 text-white flex flex-col items-center py-4 space-y-6 transition-all duration-300">
         <a href="index.html" >
-          <img id="logo" src="assets/logo.png">
+          <img src="../../assets/logo.png" alt="Logo" />
         </a>
         <nav id="sidebar-nav" class="flex flex-col items-center space-y-6 mt-4 w-full">
           <a href="employees.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
@@ -48,7 +48,7 @@
           </a>
           <a href="support.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
             <span>🌐</span>
-            <span class="sidebar-label hidden">Support Center</span>
+            <span class="sidebar-label hidden">Support</span>
           </a>
         </nav>
       </aside>
@@ -118,28 +118,6 @@
       </div>
     </div>
 
-    <!-- Sidebar Toggle Script -->
-    <script>
-      const sidebar = document.getElementById('sidebar');
-      const toggleBtn = document.getElementById('sidebar-toggle');
-      const sidebarNav = document.getElementById('sidebar-nav');
-
-      toggleBtn.addEventListener('click', () => {
-        if (sidebar.classList.contains('w-20')) {
-          sidebar.classList.remove('w-20');
-          sidebar.classList.add('w-64');
-          sidebarNav.classList.remove('items-center');
-          sidebarNav.classList.add('items-start');
-        } else {
-          sidebar.classList.remove('w-64');
-          sidebar.classList.add('w-20');
-          sidebarNav.classList.remove('items-start');
-          sidebarNav.classList.add('items-center');
-        }
-        document.querySelectorAll('.sidebar-label').forEach(label => {
-          label.classList.toggle('hidden');
-        });
-      });
-    </script>
+    <script src="../backend/sidebar.js"></script>
   </body>
 </html>

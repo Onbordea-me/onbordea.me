@@ -69,7 +69,7 @@
     <div class="flex h-screen">
       <aside id="sidebar" class="w-20 bg-gray-900 text-white flex flex-col items-center py-4 space-y-6 transition-all duration-300">
         <a href="index.html" >
-          <img id="logo" src="assets/logo.png">
+          <img src="../../assets/logo.png" alt="Logo" />
         </a>
         <nav id="sidebar-nav" class="flex flex-col items-center space-y-6 mt-4 w-full">
           <a href="employees.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
@@ -321,32 +321,6 @@
       </div>
     </div>
 
-    <script>
-      // Sidebar Toggle Logic
-      const sidebarToggle = document.getElementById('sidebar-toggle');
-      const sidebar = document.getElementById('sidebar');
-      const sidebarLabels = document.querySelectorAll('.sidebar-label');
-      const logo = document.getElementById('logo');
-
-      sidebarToggle.addEventListener('click', () => {
-        sidebar.classList.toggle('w-20');
-        sidebar.classList.toggle('w-64'); // Adjust this width for expanded state
-
-        sidebarLabels.forEach(label => {
-          label.classList.toggle('hidden');
-        });
-
-        // Adjust logo size based on sidebar state
-        if (sidebar.classList.contains('w-64')) {
-          logo.style.width = '100px'; // Larger size when expanded
-          logo.style.height = 'auto';
-          logo.src = 'assets/logo-full.png'; // Assuming you have a full logo for expanded view
-        } else {
-          logo.style.width = 'auto'; // Original size
-          logo.style.height = 'auto';
-          logo.src = 'assets/logo.png'; // Original logo for collapsed view
-        }
-      });
-    </script>
+    <script src="../backend/sidebar.js"></script>
   </body>
 </html>
