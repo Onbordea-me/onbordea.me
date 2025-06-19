@@ -123,7 +123,7 @@
                 <p class="text-sm mt-1 text-gray-700">Offboarding solicitado<br/>2 empleados</p>
               </div>
             </div>
-            <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm self-start">
+            <button id="openRequestModalBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm">
               + Nuevo Pedido
             </button>
           </div>
@@ -186,6 +186,73 @@
         </main>
       </div>
     </div>
+
+        <div id="newRequestModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+      <div class="bg-white rounded-lg p-6 w-full max-w-lg shadow-lg">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-semibold">Nuevo Pedido</h2>
+          <button id="closeRequestModalBtn" class="text-gray-500 hover:text-gray-700">&times;</button>
+        </div>
+
+        <form id="newRequestForm" class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium">Tipo de Pedido</label>
+              <select name="tipo" class="w-full border rounded px-3 py-2" required>
+                <option value="Onboarding">Onboarding</option>
+                <option value="Offboarding">Offboarding</option>
+                <option value="Mantenimiento">Mantenimiento</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium">País</label>
+              <input type="text" name="pais" class="w-full border rounded px-3 py-2" placeholder="Ej: USA" required />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium">Nombre del Empleado</label>
+              <input type="text" name="nombre" class="w-full border rounded px-3 py-2" required />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium">Teléfono</label>
+              <input type="text" name="telefono" class="w-full border rounded px-3 py-2" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium">Dirección Email</label>
+            <input type="email" name="email" class="w-full border rounded px-3 py-2" required />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium">Tipo de Equipo</label>
+              <input type="text" name="equipo" class="w-full border rounded px-3 py-2" />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium">Software Requerido</label>
+              <select name="software" class="w-full border rounded px-3 py-2">
+                <option value="">Seleccione</option>
+                <option value="Office Suite">Office Suite</option>
+                <option value="Design Tools">Design Tools</option>
+                <option value="Antivirus">Antivirus</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex justify-end space-x-2 pt-4">
+            <button type="button" id="closeRequestModalBtn2" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Cancelar</button>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Crear Pedido</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
  
     <!-- Mapbox JS -->
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
@@ -236,7 +303,50 @@
       });
     </script>
 
-    
+    <script>
+  const newRequestModal = document.getElementById('newRequestModal');
+  const openRequestModalBtn = document.getElementById('openRequestModalBtn');
+  const closeRequestModalBtn = document.getElementById('closeRequestModalBtn');
+  const closeRequestModalBtn2 = document.getElementById('closeRequestModalBtn2');
+  const newRequestForm = document.getElementById('newRequestForm');
+
+  openRequestModalBtn.addEventListener('click', () => newRequestModal.classList.remove('hidden'));
+  closeRequestModalBtn.addEventListener('click', () => newRequestModal.classList.add('hidden'));
+  closeRequestModalBtn2.addEventListener('click', () => newRequestModal.classList.add('hidden'));
+
+  newRequestForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(newRequestForm);
+    const data = {
+      tipo: formData.get('tipo'),
+      pais: formData.get('pais'),
+      nombre: formData.get('nombre'),
+      telefono: formData.get('telefono'),
+      email: formData.get('email'),
+      equipo: formData.get('equipo'),
+      software: formData.get('software')
+    };
+
+    try {
+      const res = await fetch('/api/pedidos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (res.ok) {
+        alert('Pedido creado exitosamente');
+        newRequestModal.classList.add('hidden');
+        newRequestForm.reset();
+      } else {
+        const err = await res.json();
+        alert('Error: ' + (err.error || 'No se pudo crear el pedido'));
+      }
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+  });
+</script>
+
     <script src="../backend/sidebar.js"></script>
   </body>
 </html>
