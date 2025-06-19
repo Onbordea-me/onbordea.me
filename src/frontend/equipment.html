@@ -75,7 +75,9 @@
         <main class="flex-1 p-6 overflow-y-auto">
           <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-semibold text-gray-800">Equipment Inventory</h2>
-            <button class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 text-sm">Add New Equipment</button>
+            <button id="openEquipmentModalBtn" class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 text-sm">
+              Add New Equipment
+            </button>
           </div>
 
           <!-- Equipment Categories -->
@@ -123,6 +125,78 @@
       </div>
     </div>
 
+
+        <!-- Add Equipment Modal -->
+    <div id="addEquipmentModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+      <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <h2 class="text-lg font-semibold mb-4">Add New Equipment</h2>
+        <form id="addEquipmentForm" class="space-y-3">
+          <input name="category" type="text" placeholder="Category (e.g., Computers)" required class="w-full border rounded px-3 py-2" />
+          <input name="name" type="text" placeholder="Equipment Name (e.g., PC)" required class="w-full border rounded px-3 py-2" />
+          <input name="stock" type="number" placeholder="Stock" required class="w-full border rounded px-3 py-2" />
+          <input name="eta" type="text" placeholder="ETA (e.g., 2 days)" required class="w-full border rounded px-3 py-2" />
+          <div class="flex justify-end space-x-2">
+            <button type="button" id="closeEquipmentModalBtn" class="px-4 py-1 rounded bg-gray-300 hover:bg-gray-400">Cancel</button>
+            <button type="submit" class="px-4 py-1 rounded bg-indigo-500 text-white hover:bg-indigo-600">Add</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <script src="../backend/sidebar.js"></script>
+      <script>
+    const equipmentModal = document.getElementById('addEquipmentModal');
+    const openEquipmentModalBtn = document.getElementById('openEquipmentModalBtn');
+    const closeEquipmentModalBtn = document.getElementById('closeEquipmentModalBtn');
+    const addEquipmentForm = document.getElementById('addEquipmentForm');
+
+    openEquipmentModalBtn.addEventListener('click', () => equipmentModal.classList.remove('hidden'));
+    closeEquipmentModalBtn.addEventListener('click', () => equipmentModal.classList.add('hidden'));
+
+    addEquipmentForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(addEquipmentForm);
+      const data = {
+        category: formData.get('category'),
+        name: formData.get('name'),
+        stock: parseInt(formData.get('stock')),
+        eta: formData.get('eta')
+      };
+
+      try {
+        const res = await fetch('/api/equipment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (res.ok) {
+          const newEquipment = await res.json();
+          addEquipmentCard(newEquipment);
+          equipmentModal.classList.add('hidden');
+          addEquipmentForm.reset();
+          alert('Equipment added!');
+        } else {
+          const err = await res.json();
+          alert('Error: ' + (err.error || 'Could not add equipment'));
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    });
+
+    function addEquipmentCard(equipment) {
+      const section = document.querySelector(`.category-${equipment.category.toLowerCase().replace(/\s+/g, '-')}`);
+      if (section) {
+        const entry = document.createElement('p');
+        entry.className = "text-sm text-gray-700";
+        entry.textContent = `${equipment.name} - Stock: ${equipment.stock} - ETA: ${equipment.eta}`;
+        section.appendChild(entry);
+      } else {
+        alert('Category not found. Please refresh the page to see the update.');
+      }
+    }
+  </script>
+
   </body>
 </html>
