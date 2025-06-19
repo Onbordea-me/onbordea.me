@@ -69,8 +69,7 @@
     <div class="flex h-screen">
       <aside id="sidebar" class="w-20 bg-gray-900 text-white flex flex-col items-center py-4 space-y-6 transition-all duration-300">
         <a href="index.html" >
-          <img src="../../assets/logo.png" alt="Logo" />
-        </a>
+          <img id="logo" src="../../assets/logo.png" alt="Logo" /> </a>
         <nav id="sidebar-nav" class="flex flex-col items-center space-y-6 mt-4 w-full">
           <a href="employees.html" class="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
             <span>👥</span>
@@ -113,8 +112,7 @@
             <span>🔔</span>
             <span class="flex items-center space-x-2">
               <img src="https://via.placeholder.com/30" class="rounded-full" />
-              <span class="text-sm">Dominic Keller</span>
-            </span>
+              <span class="text-sm" id="user-display-name">Dominic Keller</span> </span>
           </div>
         </header>
 
@@ -126,13 +124,11 @@
               <h3 class="text-lg font-semibold text-gray-800 mb-4">Profile</h3>
               <div class="space-y-3 text-sm">
                 <div>
-                  <label class="block text-gray-700">Name</label>
-                  <input type="text" class="w-full border px-2 py-1 rounded" value="Dominic Keller" />
-                </div>
+                  <label for="profile-name" class="block text-gray-700">Name</label>
+                  <input type="text" id="profile-name" class="w-full border px-2 py-1 rounded" value="Dominic Keller" /> </div>
                 <div>
-                  <label class="block text-gray-700">Email</label>
-                  <input type="email" class="w-full border px-2 py-1 rounded" value="dominic@email.com" />
-                </div>
+                  <label for="profile-email" class="block text-gray-700">Email</label>
+                  <input type="email" id="profile-email" class="w-full border px-2 py-1 rounded" value="dominic@email.com" /> </div>
               </div>
             </div>
 
@@ -142,22 +138,19 @@
                 <div class="flex justify-between items-center">
                   <span>Email Alerts</span>
                   <label class="toggle-switch">
-                    <input type="checkbox" checked />
-                    <span class="slider"></span>
+                    <input type="checkbox" id="email-alerts-toggle" checked /> <span class="slider"></span>
                   </label>
                 </div>
                 <div class="flex justify-between items-center">
                   <span>SMS Notifications</span>
                   <label class="toggle-switch">
-                    <input type="checkbox" />
-                    <span class="slider"></span>
+                    <input type="checkbox" id="sms-notifications-toggle" /> <span class="slider"></span>
                   </label>
                 </div>
                 <div class="flex justify-between items-center">
                   <span>Weekly Reports</span>
                   <label class="toggle-switch">
-                    <input type="checkbox" checked />
-                    <span class="slider"></span>
+                    <input type="checkbox" id="weekly-reports-toggle" checked /> <span class="slider"></span>
                   </label>
                 </div>
               </div>
@@ -170,26 +163,23 @@
                   <h4 class="text-md font-medium text-gray-700 mb-2">General</h4>
                   <div class="space-y-3">
                     <div>
-                      <label class="block text-gray-700">Default Currency</label>
-                      <select class="w-full border px-2 py-1 rounded">
-                        <option>USD - United States Dollar</option>
-                        <option>EUR - Euro</option>
-                        <option>GBP - British Pound</option>
-                        <option selected>ARS - Argentine Peso</option>
+                      <label for="default-currency" class="block text-gray-700">Default Currency</label>
+                      <select id="default-currency" class="w-full border px-2 py-1 rounded"> <option value="USD">USD - United States Dollar</option>
+                        <option value="EUR">EUR - Euro</option>
+                        <option value="GBP">GBP - British Pound</option>
+                        <option value="ARS" selected>ARS - Argentine Peso</option>
                       </select>
                     </div>
                     <div>
-                      <label class="block text-gray-700">Date Format</label>
-                      <select class="w-full border px-2 py-1 rounded">
-                        <option selected>MM/DD/YYYY</option>
-                        <option>DD/MM/YYYY</option>
-                        <option>YYYY-MM-DD</option>
+                      <label for="date-format" class="block text-gray-700">Date Format</label>
+                      <select id="date-format" class="w-full border px-2 py-1 rounded"> <option value="MM/DD/YYYY" selected>MM/DD/YYYY</option>
+                        <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                        <option value="YYYY-MM-DD">YYYY-MM-DD</option>
                       </select>
                     </div>
                     <div>
-                      <label class="block text-gray-700">Time Zone</label>
-                      <select class="w-full border px-2 py-1 rounded">
-                        <option value="America/New_York">(GMT-05:00) Eastern Time (US & Canada)</option>
+                      <label for="time-zone" class="block text-gray-700">Time Zone</label>
+                      <select id="time-zone" class="w-full border px-2 py-1 rounded"> <option value="America/New_York">(GMT-05:00) Eastern Time (US & Canada)</option>
                         <option value="America/Chicago">(GMT-06:00) Central Time (US & Canada)</option>
                         <option value="America/Denver">(GMT-07:00) Mountain Time (US & Canada)</option>
                         <option value="America/Los_Angeles">(GMT-08:00) Pacific Time (US & Canada)</option>
@@ -199,8 +189,7 @@
                     <div class="flex justify-between items-center">
                       <span>Enable Dark Mode (Applies to UI)</span>
                       <label class="toggle-switch">
-                        <input type="checkbox" />
-                        <span class="slider"></span>
+                        <input type="checkbox" id="dark-mode-toggle" /> <span class="slider"></span>
                       </label>
                     </div>
                   </div>
@@ -210,29 +199,29 @@
                   <h4 class="text-md font-medium text-gray-700 mb-2">Onboarding</h4>
                   <div class="space-y-3">
                     <div>
-                      <label class="block text-gray-700">Default Onboarding Template</label>
-                      <select class="w-full border px-2 py-1 rounded">
-                        <option>Standard Employee Onboarding</option>
-                        <option>Contractor Onboarding</option>
-                        <option>Sales Team Onboarding</option>
-                        <option>Tech Team Onboarding</option>
-                        <option>Custom Template</option>
+                      <label for="default-onboarding-template" class="block text-gray-700">Default Onboarding Template</label>
+                      <select id="default-onboarding-template" class="w-full border px-2 py-1 rounded"> <option value="Standard Employee Onboarding">Standard Employee Onboarding</option>
+                        <option value="Contractor Onboarding">Contractor Onboarding</option>
+                        <option value="Sales Team Onboarding">Sales Team Onboarding</option>
+                        <option value="Tech Team Onboarding">Tech Team Onboarding</option>
+                        <option value="Custom Template">Custom Template</option>
                       </select>
                     </div>
                     <div class="flex justify-between items-center">
                       <span>Automate Welcome Emails</span>
                       <label class="toggle-switch">
-                        <input type="checkbox" checked />
-                        <span class="slider"></span>
+                        <input type="checkbox" id="automate-welcome-emails-toggle" checked /> <span class="slider"></span>
                       </label>
                     </div>
                     <div class="flex justify-between items-center">
                       <span>Require Equipment Acknowledgment</span>
                       <label class="toggle-switch">
-                        <input type="checkbox" checked />
-                        <span class="slider"></span>
+                        <input type="checkbox" id="require-equipment-acknowledgment-toggle" checked /> <span class="slider"></span>
                       </label>
                     </div>
+                     <div>
+                      <label for="onboarding-completion-threshold" class="block text-gray-700">Onboarding Completion Threshold (%)</label>
+                      <input type="number" min="0" max="100" id="onboarding-completion-threshold" class="w-full border px-2 py-1 rounded" value="90" /> </div>
                   </div>
                 </div>
 
@@ -240,49 +229,59 @@
                   <h4 class="text-md font-medium text-gray-700 mb-2">Equipment Management</h4>
                   <div class="space-y-3">
                     <div>
-                      <label class="block text-gray-700">Default Asset Tag Prefix</label>
-                      <input type="text" class="w-full border px-2 py-1 rounded" value="ONB-EQ-" />
-                    </div>
+                      <label for="asset-tag-prefix" class="block text-gray-700">Default Asset Tag Prefix</label>
+                      <input type="text" id="asset-tag-prefix" class="w-full border px-2 py-1 rounded" value="ONB-EQ-" /> </div>
                     <div class="flex justify-between items-center">
                       <span>Enable Low Stock Alerts</span>
                       <label class="toggle-switch">
-                        <input type="checkbox" checked />
-                        <span class="slider"></span>
+                        <input type="checkbox" id="low-stock-alerts-toggle" checked /> <span class="slider"></span>
                       </label>
                     </div>
                     <div>
-                      <label class="block text-gray-700">Low Stock Threshold (Units)</label>
-                      <input type="number" min="1" class="w-full border px-2 py-1 rounded" value="5" />
-                    </div>
+                      <label for="low-stock-threshold" class="block text-gray-700">Low Stock Threshold (Units)</label>
+                      <input type="number" min="1" id="low-stock-threshold" class="w-full border px-2 py-1 rounded" value="5" /> </div>
                     <div class="flex justify-between items-center">
                       <span>Automate Return Reminders</span>
                       <label class="toggle-switch">
-                        <input type="checkbox" />
-                        <span class="slider"></span>
+                        <input type="checkbox" id="automate-return-reminders-toggle" /> <span class="slider"></span>
                       </label>
                     </div>
                   </div>
                 </div>
 
+                <div class="border-b pb-4 mb-4">
+                  <h4 class="text-md font-medium text-gray-700 mb-2">Integrations</h4>
+                  <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                      <span>Sync with HRIS (e.g., BambooHR, Workday)</span>
+                      <label class="toggle-switch">
+                        <input type="checkbox" id="sync-hris-toggle" /> <span class="slider"></span>
+                      </label>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span>Connect with IT Ticketing System (e.g., Jira, Zendesk)</span>
+                      <label class="toggle-switch">
+                        <input type="checkbox" id="it-ticketing-toggle" /> <span class="slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
 
                 <div class="border-b pb-4 mb-4">
                   <h4 class="text-md font-medium text-gray-700 mb-2">Data & Privacy</h4>
                   <div class="space-y-3">
                     <div>
-                      <label class="block text-gray-700">Data Retention Period (Days)</label>
-                      <input type="number" min="30" class="w-full border px-2 py-1 rounded" value="365" />
-                      <p class="text-xs text-gray-500 mt-1">Data older than this period may be archived or deleted.</p>
+                      <label for="data-retention-days" class="block text-gray-700">Data Retention Period (Days)</label>
+                      <input type="number" min="30" id="data-retention-days" class="w-full border px-2 py-1 rounded" value="365" /> <p class="text-xs text-gray-500 mt-1">Data older than this period may be archived or deleted.</p>
                     </div>
                     <div class="flex justify-between items-center">
                       <span>Enable Audit Logging</span>
                       <label class="toggle-switch">
-                        <input type="checkbox" checked />
-                        <span class="slider"></span>
+                        <input type="checkbox" id="audit-logging-toggle" checked /> <span class="slider"></span>
                       </label>
                     </div>
                     <div>
-                      <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">Export All Data</button>
-                    </div>
+                      <button id="export-data-button" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">Export All Data</button> </div>
                   </div>
                 </div>
 
@@ -292,15 +291,13 @@
                     <div class="flex justify-between items-center">
                       <span>Enable Two-Factor Authentication (2FA) for all users</span>
                       <label class="toggle-switch">
-                        <input type="checkbox" />
-                        <span class="slider"></span>
+                        <input type="checkbox" id="two-factor-auth-toggle" /> <span class="slider"></span>
                       </label>
                     </div>
                     <div>
-                      <label class="block text-gray-700">Password Policy</label>
-                      <select class="w-full border px-2 py-1 rounded">
-                        <option>Minimum 8 characters</option>
-                        <option selected>Minimum 12 characters, uppercase, lowercase, number, symbol</option>
+                      <label for="password-policy" class="block text-gray-700">Password Policy</label>
+                      <select id="password-policy" class="w-full border px-2 py-1 rounded"> <option value="min8">Minimum 8 characters</option>
+                        <option value="min12_complex" selected>Minimum 12 characters, uppercase, lowercase, number, symbol</option>
                       </select>
                     </div>
                     <div>
@@ -310,8 +307,7 @@
                 </div>
 
                 <div class="flex justify-end pt-4 border-t">
-                  <button class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">Save Changes</button>
-                </div>
+                  <button id="save-changes-button" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">Save Changes</button> </div>
 
               </div>
             </div>
@@ -321,8 +317,9 @@
       </div>
     </div>
 
-    <script src="../backend/sidebar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../backend/db/settings.js"></script>
+    <script src="../backed/config/db.js"></script>
+    <script src="../backend/sidebar.js"></script>
+
   </body>
 </html>
