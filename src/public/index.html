@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Onbordea.me</title>
 
+  
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -98,7 +99,9 @@
         <div class="flex items-center space-x-4">
           <span>🔔</span>
           <span class="flex items-center space-x-2">
+             <!--
             <img src="https://via.placeholder.com/30" class="rounded-full" />
+          -->
             <span class="text-sm">Marcos Cohen</span>
           </span>
         </div>
@@ -301,8 +304,13 @@
   </div>
 
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
-  <script src="../backend/map.js"></script>
-  <script src="../backend/sidebar.js"></script>
+  <!-- Supabase Client Library (MUST be loaded FIRST) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+
+  <script src="js/main_app.js"></script> 
+  <script src="js/map.js"></script>
+  <script src="js/sidebar.js"></script>
   <script>
   // --- Modal Elements ---
   const newRequestModal = document.getElementById('newRequestModal');
