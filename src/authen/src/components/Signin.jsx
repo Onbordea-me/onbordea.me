@@ -1,62 +1,46 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "../supabaseClient"; // adjust the path as needed
+import React , { useState } from 'react'
+import { Link , useNavigate} from 'react-router-dom'
+import { UserAuth } from '../context/AuthContext'; 
 
-function Signin() {
-  const navigate = useNavigate();
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
+const Signin = () => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState("");
+    const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    // Supabase sign-in
-    const { error } = await supabase.auth.signInWithPassword({
-      email: form.email,
-      password: form.password,
-    });
-    if (error) {
-      setError("Invalid email or password");
-    } else {
-      navigate("/Dashboard");
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: 300, margin: "0 auto" }}>
-      <h2>Sign In</h2>
-      {error && <div style={{ color: "red", marginBottom: 8 }}>{error}</div>}
-      <div style={{ marginBottom: 12 }}>
-        <label>Email:</label>
-        <input
-          type="email"
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-          required
-          style={{ width: "100%", padding: 8, marginTop: 4 }}
-        />
-      </div>
-      <div style={{ marginBottom: 12 }}>
-        <label>Password:</label>
-        <input
-          type="password"
-          name="password"
-          value={form.password}
-          onChange={handleChange}
-          required
-          style={{ width: "100%", padding: 8, marginTop: 4 }}
-        />
-      </div>
-      <button type="submit" style={{ width: "100%", padding: 8 }}>
-        Sign In
-      </button>
-    </form>
-  );
+    const {session, signInUser} = UserAuth();
+    console.log(session);
+    console.log(email, password);
+    const handleSignIn = async (e) => {
+        e.preventDefault()
+        setLoading(true);
+        try {
+            const result = await signInUser(email, password);
+            if (result.success) {
+                navigate("/Dashboard");
+            }
+        }
+        catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+    return(
+     <div>
+        <form onSubmit={handleSignIn} className='max-w-md m-auto pt-24'>
+            <h2 className='font-bold pb-2'>Sign In</h2>
+            <p>Don't have an account? <Link to ="/Signup">Sign Up!</Link></p>
+            <div className='flex flex-col py-4'>
+                <input onChange={(e) => setEmail(e.target.value)} placeholder="Email" className='p-3 mt-6' type="email" />
+                <input onChange={(e) => setPassword(e.target.value)} placeholder="Password" className='p-3 mt-6' type="password" />
+                <button type="submit" disabled={loading} className='mt-6 w-full'>Sign In</button>
+                {error && <p className="text-red-600 text-center pt-4"> {error}</p>}
+            </div>
+        </form>
+    </div>
+    );
 }
 
 export default Signin;

@@ -1,52 +1,46 @@
 import React, { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js'; // Make sure to install @supabase/supabase-js
+import { createClient } from '@supabase/supabase-js';
+import { UserAuth } from "../context/AuthContext";
+import { useNavigate } from 'react-router-dom';
 
-// --- Supabase Configuration (from main_app.js) ---
+// --- Supabase Setup ---
 const SUPABASE_URL = 'https://plztqnszikysepsoawhy.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBlenRxbnN6aWt5c2Vwc29hd2h5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAxODAxNTUsImV4cCI6MjA2NTc1NjE1NX0.Sjqk7ulL4wW8dg1hyyEP2NVCsMd0RcNbUUN8X1WQEog';
-
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// --- Mock Data for Employee Detail Modal (from index.html inline script) ---
+// --- Mock Data for Employee Detail Modal ---
 const mockTicketData = {
   123: [
     { ticket: 'Onboarding', status: 'Completado', date: '1 ene. 2024' },
     { ticket: 'Onboarding', status: 'Pendiente', date: '14 dic. 2023' }
   ],
-  // You would expand this with more data as needed for other employees
-  // For 'Laura Sanchez' and 'Juan Gonzalez' using data-id="123", they will also show Anna's tickets.
-  // In a real app, each would have unique IDs and corresponding ticket data.
 };
 
-const App = () => {
-  // --- State for Sidebar (from sidebar.js) ---
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+const Dashboard = () => {
+  // --- Auth/User State ---
+  const { session, signOutUser } = UserAuth();
+  const navigate = useNavigate();
+  const [userDisplayName, setUserDisplayName] = useState('Loading...');
 
-  // --- State for Modals (from index.html inline script) ---
+  // --- UI State ---
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showNewRequestModal, setShowNewRequestModal] = useState(false);
   const [showAddEmployeeModal, setShowAddEmployeeModal] = useState(false);
   const [showEmployeeDetailModal, setShowEmployeeDetailModal] = useState(false);
 
-  // --- State for Employee Data ---
-  const [userDisplayName, setUserDisplayName] = useState('Loading...'); // From main_app.js
-  const [employees, setEmployees] = useState([]); // For the employee dropdown and detail
-  const [selectedEmployee, setSelectedEmployee] = useState(null); // For employee detail modal
+  // --- Data State ---
+  const [employees, setEmployees] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
-  // --- Supabase Auth and User Info (from main_app.js) ---
+  // --- Auth & Profile Loading ---
   useEffect(() => {
     async function checkAuthAndLoadUserInfo() {
       const { data: { session }, error } = await supabase.auth.getSession();
-
-      if (error) {
-        console.error('Error getting session:', error);
-      }
-
+      if (error) console.error('Error getting session:', error);
       if (!session) {
-        console.log('No session found. Redirecting to login page.');
-        window.location.href = 'login.html';
+        navigate('/Signin');
         return;
       }
-
       setUserDisplayName(session.user.email);
 
       try {
@@ -55,65 +49,53 @@ const App = () => {
           .select('name')
           .eq('id', session.user.id)
           .single();
-
         if (profileError && profileError.code !== 'PGRST116') {
           console.error('Error loading user profile name:', profileError);
         } else if (profile && profile.name) {
           setUserDisplayName(profile.name);
-        } else {
-          console.warn('User profile name not found. Displaying email.');
         }
       } catch (profileFetchError) {
         console.error('Network or unexpected error fetching profile:', profileFetchError);
       }
     }
-
     checkAuthAndLoadUserInfo();
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (!session && event === 'SIGNED_OUT') {
-        console.log('Auth state changed to SIGNED_OUT. Redirecting to login.');
-        window.location.href = 'login.html';
+        navigate('/Signin');
       }
     });
-
     return () => {
-      authListener.subscription.unsubscribe(); // Cleanup subscription
+      authListener.subscription.unsubscribe();
     };
-  }, []);
+  }, [navigate]);
 
-  const signOutUser = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error('Sign out error:', error);
-      alert('Failed to sign out: ' + error.message);
-    } else {
-      console.log('User signed out from main app.');
-      window.location.href = 'login.html';
+  // --- Sign Out Handler ---
+  const handleSignOut = async (e) => {
+    e.preventDefault();
+    try {
+      await signOutUser();
+      navigate("/");
+    } catch (error) {
+      console.error("Error signing out:", error);
     }
   };
 
-  // --- Load Employees for Dropdown (from index.html inline script) ---
+  // --- Employees Loading ---
   const loadEmployees = async () => {
     try {
-      // In a real React app, you'd likely fetch from your Supabase table directly
-      // For this conversion, mimicking the original JS's fetch to a JSON file
       const response = await fetch('./backend/routes/employees.json');
       const data = await response.json();
       setEmployees(data);
     } catch (err) {
-      console.error('Error loading employees:', err);
-      setEmployees([]); // Set to empty array on error
+      setEmployees([]);
     }
   };
-
   useEffect(() => {
-    if (showNewRequestModal) {
-      loadEmployees();
-    }
+    if (showNewRequestModal) loadEmployees();
   }, [showNewRequestModal]);
 
-  // --- New Request Form Submission (from index.html inline script) ---
+  // --- New Request Form Submission ---
   const handleNewRequestSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -126,11 +108,8 @@ const App = () => {
       equipo: formData.get('equipo'),
       software: formData.get('software')
     };
-
     try {
-      // This fetch simulates the original JS. In a React app with Supabase,
-      // you'd typically use `supabase.from('pedidos').insert([data])`.
-      const res = await fetch('/api/pedidos', { // Adjust this URL to your actual API endpoint
+      const res = await fetch('/api/pedidos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
@@ -138,7 +117,7 @@ const App = () => {
       if (res.ok) {
         alert('Pedido creado exitosamente');
         setShowNewRequestModal(false);
-        e.target.reset(); // Reset form
+        e.target.reset();
       } else {
         const err = await res.json();
         alert('Error: ' + (err.error || 'No se pudo crear el pedido'));
@@ -148,14 +127,7 @@ const App = () => {
     }
   };
 
-  // --- Handle "Register New Employee" Option ---
-  const handleEmployeeSelectChange = (e) => {
-    if (e.target.value === 'new') {
-      setShowAddEmployeeModal(true);
-    }
-  };
-
-  // --- Add Employee Form Submission (from index.html inline script) ---
+  // --- Add Employee Form Submission ---
   const handleAddEmployeeSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -164,13 +136,10 @@ const App = () => {
       email: formData.get('email'),
       position: formData.get('position'),
       location: formData.get('location'),
-      equipment: formData.get('equipment')?.split(',').map(item => item.trim()) // Handle optional splitting
+      equipment: formData.get('equipment')?.split(',').map(item => item.trim())
     };
-
     try {
-      // This fetch simulates the original JS. In a React app with Supabase,
-      // you'd typically use `supabase.from('employees').insert([newEmployee])`.
-      await fetch('./backend/employees.json', { // Adjust this URL to your actual API endpoint
+      await fetch('./backend/employees.json', {
         method: 'POST',
         body: JSON.stringify(newEmployee),
         headers: { 'Content-Type': 'application/json' }
@@ -178,56 +147,67 @@ const App = () => {
       alert('Empleado registrado exitosamente');
       setShowAddEmployeeModal(false);
       e.target.reset();
-      loadEmployees(); // Reload employees to update the dropdown
+      loadEmployees();
     } catch (err) {
       alert('Error registering employee: ' + err.message);
     }
   };
 
-  // --- Employee Detail Modal Logic (from index.html inline script) ---
+  // --- Employee Detail Modal Logic ---
   const openEmployeeDetail = (id, name, country) => {
     setSelectedEmployee({ id, name, country });
     setShowEmployeeDetailModal(true);
   };
 
+  // --- Handle "Register New Employee" Option ---
+  const handleEmployeeSelectChange = (e) => {
+    if (e.target.value === 'new') setShowAddEmployeeModal(true);
+  };
+
+  // --- Loading or Not Authenticated ---
+  if (session === undefined) return <div className="bg-black text-green-400 h-screen w-screen flex items-center justify-center">Loading...</div>;
+  if (!session) {
+    navigate("/Signin");
+    return null;
+  }
+
+  // --- Render ---
   return (
-    <div className="flex h-screen overflow-hidden font-['IBM Plex Sans']">
+    <div className="flex h-screen overflow-hidden font-['IBM Plex Sans'] bg-black">
       {/* Sidebar */}
       <aside
         id="sidebar"
-        className={`w-${isSidebarOpen ? '48' : '20'} bg-gray-900 text-white flex flex-col items-center py-4 space-y-6 transition-all duration-300`}
+        className={`w-${isSidebarOpen ? '48' : '20'} bg-gray-900 text-green-400 flex flex-col items-center py-4 space-y-6 transition-all duration-300`}
       >
-        {/* Logo */}
         <a href="index.html">
-          <img src="../../assets/logo.png" alt="Logo" className="w-12 h-12" /> {/* Adjust size as needed */}
+          <img src="/assets/logo.png" alt="Logo" className="w-12 h-12" />
         </a>
-        {/* Navigation */}
         <nav id="sidebar-nav" className="flex flex-col items-center space-y-6 mt-4 w-full">
-          <a href="employees.html" className="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition px-4 w-full justify-start">
+          <a href="employees.html" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition px-4 w-full justify-start">
             <span>👥</span>
             <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Employees</span>
           </a>
-          <a href="equipment.html" className="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition px-4 w-full justify-start">
+          <a href="equipment.html" className="flex items-center space-x-2 py-1 rounded hover:bg-green-900 transition px-4 w-full justify-start">
             <span>📦</span>
             <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Equipment</span>
           </a>
-          <a href="requests.html" className="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition px-4 w-full justify-start">
+          <a href="requests.html" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition px-4 w-full justify-start">
             <span>📬</span>
             <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Requests</span>
           </a>
-          <a href="analytics.html" className="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition px-4 w-full justify-start">
+          <a href="analytics.html" className="flex items-center space-x-2 py-1 rounded hover:bg-green-900 transition px-4 w-full justify-start">
             <span>📊</span>
             <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Analytics</span>
           </a>
-          <a href="reports.html" className="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition px-4 w-full justify-start">
+          <a href="reports.html" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition px-4 w-full justify-start">
             <span>🗂️</span>
             <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Reports</span>
           </a>
-          <a href="settings.html" className="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition px-4 w-full justify-start">
+          <a href="settings.html" className="flex items-center space-x-2 py-1 rounded hover:bg-green-900 transition px-4 w-full justify-start">
             <span>🛰️</span>
             <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Settings</span>
           </a>
-          <a href="support.html" className="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition px-4 w-full justify-start">
+          <a href="support.html" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition px-4 w-full justify-start">
             <span>🌐</span>
             <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Support</span>
           </a>
@@ -235,21 +215,21 @@ const App = () => {
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col bg-gray-50">
+      <div className="flex-1 flex flex-col bg-black">
         {/* Top Navbar */}
-        <header className="flex items-center justify-between px-6 py-4 bg-white shadow">
+        <header className="flex items-center justify-between px-6 py-4 bg-gray-900 shadow">
           <div className="flex items-center space-x-4">
-            <button id="sidebar-toggle" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="text-gray-600 text-xl">
+            <button id="sidebar-toggle" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="text-green-400 text-xl">
               ☰
             </button>
-            <input type="text" placeholder="Search..." className="px-3 py-1 border rounded-md text-sm focus:outline-none" />
-            <button className="bg-indigo-500 text-white px-4 py-1 rounded text-sm">Search</button>
+            <input type="text" placeholder="Search..." className="px-3 py-1 border rounded-md text-sm focus:outline-none bg-gray-800 text-green-200 border-green-700" />
+            <button className="bg-blue-600 text-white px-4 py-1 rounded text-sm hover:bg-green-600">Search</button>
           </div>
           <div className="flex items-center space-x-4">
-            <span>🔔</span>
+            <span className="text-blue-400">🔔</span>
             <span className="flex items-center space-x-2">
-              <span id="user-display-name" className="text-sm">{userDisplayName}</span>
-              <button id="signout-btn-navbar" onClick={signOutUser} className="text-gray-500 hover:text-gray-700 text-xs">
+              <span id="user-display-name" className="text-green-300">{userDisplayName}</span>
+              <button id="signout-btn-navbar" onClick={handleSignOut} className="text-green-400 hover:text-blue-400 text-xs">
                 (Sign Out)
               </button>
             </span>
@@ -257,43 +237,43 @@ const App = () => {
         </header>
 
         {/* Dashboard + Map */}
-        <main className="bg-white p-6 rounded shadow flex flex-col gap-6 overflow-auto m-6">
+        <main className="bg-black p-6 rounded shadow flex flex-col gap-6 overflow-auto m-6">
           {/* Dashboard Overview */}
           <div className="flex justify-between items-start flex-wrap gap-4">
             <div className="flex gap-4 flex-wrap">
-              <div className="bg-blue-100 text-blue-900 p-4 rounded shadow w-40">
+              <div className="bg-blue-900 text-green-300 p-4 rounded shadow w-40">
                 <p className="text-sm font-semibold">Empleados Activos</p>
                 <p className="text-2xl font-bold">25</p>
               </div>
-              <div className="bg-white p-4 rounded shadow w-40">
+              <div className="bg-black border border-blue-900 p-4 rounded shadow w-40 text-blue-400">
                 <p className="text-sm font-semibold">Tickets Abiertos</p>
                 <p className="text-2xl font-bold">3</p>
               </div>
-              <div className="bg-white p-4 rounded shadow w-40">
+              <div className="bg-black border border-green-900 p-4 rounded shadow w-40 text-green-400">
                 <p className="text-sm font-semibold">Tickets en Proceso</p>
                 <p className="text-2xl font-bold">6</p>
               </div>
-              <div className="bg-white p-4 rounded shadow w-56">
+              <div className="bg-black border border-green-900 p-4 rounded shadow w-56 text-green-300">
                 <p className="text-sm font-semibold">Últimos Movimientos</p>
-                <p className="text-sm mt-1 text-gray-700">Offboarding solicitado<br />2 empleados</p>
+                <p className="text-sm mt-1 text-green-400">Offboarding solicitado<br />2 empleados</p>
               </div>
             </div>
-            <button onClick={() => setShowNewRequestModal(true)} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm">
+            <button onClick={() => setShowNewRequestModal(true)} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm">
               + Nuevo Pedido
             </button>
           </div>
 
           {/* Alert Message */}
-          <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded shadow text-sm">
+          <div className="bg-blue-900 border-l-4 border-green-500 text-green-200 p-4 rounded shadow text-sm">
             ⚠️ Entrega demorada para Juan Pérez
           </div>
 
           {/* Tickets Table */}
           <div>
-            <h3 className="text-lg font-semibold mb-2">Tickets Recientes</h3>
+            <h3 className="text-lg font-semibold mb-2 text-blue-400">Tickets Recientes</h3>
             <div className="overflow-auto">
-              <table className="min-w-full text-sm bg-white border border-gray-200 rounded shadow">
-                <thead className="bg-gray-100 text-gray-700 font-semibold">
+              <table className="min-w-full text-sm bg-black border border-green-900 rounded shadow text-green-200">
+                <thead className="bg-blue-900 text-green-300 font-semibold">
                   <tr>
                     <th className="px-4 py-2 text-left">Tipo</th>
                     <th className="px-4 py-2 text-left">Empleado</th>
@@ -321,7 +301,7 @@ const App = () => {
                     <td className="px-4 py-2">Offboarding</td>
                     <td>
                       <button
-                        onClick={() => openEmployeeDetail('123', 'Laura Sanchez', 'Mexico')} 
+                        onClick={() => openEmployeeDetail('123', 'Laura Sanchez', 'Mexico')}
                         className="text-blue-600 hover:underline"
                       >
                         Laura Sanchez
@@ -335,7 +315,7 @@ const App = () => {
                     <td className="px-4 py-2">Mantenimiento</td>
                     <td>
                       <button
-                        onClick={() => openEmployeeDetail('123', 'Juan Gonzalez', 'Spain')} 
+                        onClick={() => openEmployeeDetail('123', 'Juan Gonzalez', 'Spain')}
                         className="text-blue-600 hover:underline"
                       >
                         Juan Gonzalez
@@ -352,8 +332,8 @@ const App = () => {
 
           {/* Map Placeholder */}
           <div className="mt-4 flex-1 relative min-h-[400px]">
-            <h2 className="font-semibold mb-2">Employee Map (Map component excluded)</h2>
-            <div className="map-wrapper bg-gray-200 flex items-center justify-center text-gray-600">
+            <h2 className="font-semibold mb-2 text-green-400">Employee Map (Map component excluded)</h2>
+            <div className="map-wrapper bg-blue-900 flex items-center justify-center text-green-200">
               <p>Map component would go here</p>
             </div>
           </div>
@@ -392,7 +372,7 @@ const App = () => {
                     required
                     className="w-full border rounded px-3 py-2"
                     onChange={handleEmployeeSelectChange}
-                    value={selectedEmployee?.name || ""} // If you want to control this input
+                    value={selectedEmployee?.name || ""}
                   >
                     <option value="">Seleccione Empleado</option>
                     {employees.map(emp => (
@@ -472,7 +452,6 @@ const App = () => {
                         <td className="p-2">{ticket.date}</td>
                       </tr>
                     ))}
-                    {/* Fallback if no tickets found */}
                     {!(mockTicketData[selectedEmployee.id] && mockTicketData[selectedEmployee.id].length > 0) && (
                       <tr>
                         <td colSpan="3" className="p-2 text-center text-gray-500">No tickets found.</td>
@@ -527,4 +506,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Dashboard;

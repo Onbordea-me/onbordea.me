@@ -30,6 +30,7 @@ const signInUser = async (email, password) => {
             console.error("Error signing in:", error);
             return { success: false, error: error.message };
         }
+        setSession(data.session); // <-- Add this line
         console.log("sign-in successful:", data);
         return { success: true, data };
     }catch(error){
