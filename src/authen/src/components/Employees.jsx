@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 
 const initialEmployees = [
@@ -35,6 +36,7 @@ export default function EmployeeDashboard() {
     location: '',
     equipment: '',
   });
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -55,28 +57,44 @@ export default function EmployeeDashboard() {
   };
 
   return (
-    <div className="flex h-screen font-[\'IBM Plex Sans\']">
+    <div className="flex h-screen overflow-hidden font-['IBM Plex Sans'] bg-black">
       {/* Sidebar */}
-      <aside className="w-20 bg-gray-900 text-white flex flex-col items-center py-4 space-y-6">
-        <img src="../../assets/logo.png" alt="Logo" />
-        <nav className="flex flex-col items-center space-y-6 mt-4 w-full">
-          {[
-            ['👥', 'Employees'],
-            ['📦', 'Equipment'],
-            ['📬', 'Requests'],
-            ['📊', 'Analytics'],
-            ['🗂️', 'Reports'],
-            ['🛰️', 'Settings'],
-            ['🌐', 'Support'],
-          ].map(([icon, label]) => (
-            <a
-              key={label}
-              href={`/${label.toLowerCase()}.html`}
-              className="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition w-full justify-center"
-            >
-              <span>{icon}</span>
-            </a>
-          ))}
+      <aside
+        id="sidebar"
+        className={`w-${isSidebarOpen ? '48' : '20'} bg-gray-900 text-green-400 flex flex-col items-center py-4 space-y-6 transition-all duration-300`}
+      >
+        <Link to="/Dashboard" className="flex items-center justify-center">
+          <img src="/assets/logo.png" alt="Logo" className="w-12 h-12" />
+        </Link>
+        <nav id="sidebar-nav" className="flex flex-col items-center space-y-6 mt-4 w-full">
+          <Link to="/employees" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition px-4 w-full justify-start">
+            <span>👥</span>
+            <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Employees</span>
+          </Link>
+          <a href="equipment.html" className="flex items-center space-x-2 py-1 rounded hover:bg-green-900 transition px-4 w-full justify-start">
+            <span>📦</span>
+            <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Equipment</span>
+          </a>
+          <a href="requests.html" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition px-4 w-full justify-start">
+            <span>📬</span>
+            <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Requests</span>
+          </a>
+          <a href="analytics.html" className="flex items-center space-x-2 py-1 rounded hover:bg-green-900 transition px-4 w-full justify-start">
+            <span>📊</span>
+            <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Analytics</span>
+          </a>
+          <a href="reports.html" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition px-4 w-full justify-start">
+            <span>🗂️</span>
+            <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Reports</span>
+          </a>
+          <a href="settings.html" className="flex items-center space-x-2 py-1 rounded hover:bg-green-900 transition px-4 w-full justify-start">
+            <span>🛰️</span>
+            <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Settings</span>
+          </a>
+          <a href="support.html" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition px-4 w-full justify-start">
+            <span>🌐</span>
+            <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Support</span>
+          </a>
         </nav>
       </aside>
 
