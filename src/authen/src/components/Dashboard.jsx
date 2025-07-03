@@ -185,10 +185,10 @@ const Dashboard = () => {
           <img src="/assets/logo.png" alt="Logo" className="w-12 h-12" />
         </a>
         <nav id="sidebar-nav" className="flex flex-col items-center space-y-6 mt-4 w-full">
-          <a href="employees.html" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition px-4 w-full justify-start">
+          <Link to="/employees" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition px-4 w-full justify-start">
             <span>👥</span>
             <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Employees</span>
-          </a>
+          </Link> 
           <a href="equipment.html" className="flex items-center space-x-2 py-1 rounded hover:bg-green-900 transition px-4 w-full justify-start">
             <span>📦</span>
             <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Equipment</span>
