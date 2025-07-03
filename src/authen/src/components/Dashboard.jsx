@@ -189,30 +189,30 @@ const Dashboard = () => {
             <span>👥</span>
             <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Employees</span>
           </Link> 
-          <a href="equipment.html" className="flex items-center space-x-2 py-1 rounded hover:bg-green-900 transition px-4 w-full justify-start">
+          <Link to="/equipment" className="flex items-center space-x-2 py-1 rounded hover:bg-green-900 transition px-4 w-full justify-start">
             <span>📦</span>
             <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Equipment</span>
-          </a>
-          <a href="requests.html" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition px-4 w-full justify-start">
+          </Link>
+          <Link to="/requests" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition px-4 w-full justify-start">
             <span>📬</span>
             <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Requests</span>
-          </a>
-          <a href="analytics.html" className="flex items-center space-x-2 py-1 rounded hover:bg-green-900 transition px-4 w-full justify-start">
+          </Link>
+          <Link to="/analytics" className="flex items-center space-x-2 py-1 rounded hover:bg-green-900 transition px-4 w-full justify-start">
             <span>📊</span>
             <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Analytics</span>
-          </a>
-          <a href="reports.html" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition px-4 w-full justify-start">
+          </Link>
+          <Link to="/reports" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition px-4 w-full justify-start">
             <span>🗂️</span>
             <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Reports</span>
-          </a>
-          <a href="settings.html" className="flex items-center space-x-2 py-1 rounded hover:bg-green-900 transition px-4 w-full justify-start">
+          </Link>
+          <Link to="/settings" className="flex items-center space-x-2 py-1 rounded hover:bg-green-900 transition px-4 w-full justify-start">
             <span>🛰️</span>
             <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Settings</span>
-          </a>
-          <a href="support.html" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition px-4 w-full justify-start">
+          </Link>
+          <Link to="/support" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition px-4 w-full justify-start">
             <span>🌐</span>
             <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Support</span>
-          </a>
+          </Link>
         </nav>
       </aside>
 
@@ -329,14 +329,6 @@ const Dashboard = () => {
                   </tr>
                 </tbody>
               </table>
-            </div>
-          </div>
-
-          {/* Map Placeholder */}
-          <div className="mt-4 flex-1 relative min-h-[400px]">
-            <h2 className="font-semibold mb-2 text-green-400">Employee Map (Map component excluded)</h2>
-            <div className="map-wrapper bg-blue-900 flex items-center justify-center text-green-200">
-              <p>Map component would go here</p>
             </div>
           </div>
         </main>
