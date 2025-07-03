@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { UserAuth } from "../context/AuthContext";
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 // --- Supabase Setup ---
 const SUPABASE_URL = 'https://plztqnszikysepsoawhy.supabase.co';
@@ -179,9 +180,9 @@ const Dashboard = () => {
         id="sidebar"
         className={`w-${isSidebarOpen ? '48' : '20'} bg-gray-900 text-green-400 flex flex-col items-center py-4 space-y-6 transition-all duration-300`}
       >
-        <a href="index.html">
-          <img src="/assets/logo.png" alt="Logo" className="w-12 h-12" />
-        </a>
+        <Link to="/Dashboard">
+        <img src="/assets/logo.png" alt="Logo" className="w-12 h-auto max-h-12 object-contain" />
+        </Link>
         <nav id="sidebar-nav" className="flex flex-col items-center space-y-6 mt-4 w-full">
           <a href="employees.html" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition px-4 w-full justify-start">
             <span>👥</span>
