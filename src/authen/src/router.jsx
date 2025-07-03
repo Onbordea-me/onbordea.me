@@ -6,7 +6,7 @@ import Dashboard from './components/Dashboard';
 
 export const router = createBrowserRouter([
    
-    {path: "/", element: <App />},
+    {path: "/", element: <Signup />},
     {path: "/Signup", element: <Signup />},
     {path: "/Signin", element: <Signin />},
     {path: "/Dashboard", element: <Dashboard />}

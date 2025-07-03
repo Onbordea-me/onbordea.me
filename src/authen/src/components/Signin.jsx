@@ -22,7 +22,7 @@ function Signin() {
     if (error) {
       setError("Invalid email or password");
     } else {
-      navigate("/");
+      navigate("/Dashboard");
     }
   };
 
