@@ -5,7 +5,11 @@ import Signin from './components/Signin';
 import Dashboard from './components/Dashboard';
 import Employees from './components/Employees';
 import Analytics from './components/Analytics';
-import Equipment from './components/Equipment'; 
+import Equipment from './components/Equipment';
+import Requests from './components/Requests'; // New import
+import Settings from './components/Settings'; // New import
+import Support from './components/Support';   // New import
+import Reports from './components/Reports';   // New import
 
 
 export const router = createBrowserRouter([
@@ -15,5 +19,9 @@ export const router = createBrowserRouter([
     { path: "/Dashboard", element: <Dashboard /> },
     { path: "/Employees", element: <Employees /> },
     { path: "/equipment", element: <Equipment /> },
-    { path: "/analytics", element: <Analytics /> }
+    { path: "/analytics", element: <Analytics /> },
+    { path: "/requests", element: <Requests /> }, // New route
+    { path: "/settings", element: <Settings /> }, // New route
+    { path: "/support", element: <Support /> },   // New route
+    { path: "/reports", element: <Reports /> }    // New route
 ]);

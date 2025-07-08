@@ -1,22 +1,15 @@
 // src/components/Analytics.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import Navbar from './Navbar';
 
 const Analytics = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State for sidebar toggle
   return (
     <div className="flex h-screen">
-      {/* Sidebar - Placeholder for your shared Sidebar Component */}
-      {/* <aside id="sidebar" className="w-20 bg-gray-900 text-white flex flex-col items-center py-4 space-y-6 transition-all duration-300">
-        <Link to="/">
-          <img src="../../assets/logo.png" alt="Logo" />
-        </Link>
-        <nav id="sidebar-nav" className="flex flex-col items-center space-y-6 mt-4 w-full">
-          <Link to="/employees" className="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
-            <span>👥</span>
-            <span className="sidebar-label hidden">Employees</span>
-          </Link>
-          // ... other links
-        </nav>
-      </aside> */}
+      <Navbar
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+      />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">

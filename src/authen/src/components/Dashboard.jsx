@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { UserAuth } from "../context/AuthContext";
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import Navbar from './Navbar';
 
 // --- Supabase Setup ---
 const SUPABASE_URL = 'https://plztqnszikysepsoawhy.supabase.co';
@@ -24,7 +25,7 @@ const Dashboard = () => {
   const [userDisplayName, setUserDisplayName] = useState('Loading...');
 
   // --- UI State ---
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State for sidebar toggle
   const [showNewRequestModal, setShowNewRequestModal] = useState(false);
   const [showAddEmployeeModal, setShowAddEmployeeModal] = useState(false);
   const [showEmployeeDetailModal, setShowEmployeeDetailModal] = useState(false);
@@ -175,46 +176,10 @@ const Dashboard = () => {
   // --- Render ---
   return (
     <div className="flex h-screen overflow-hidden font-['IBM Plex Sans'] bg-black">
-      {/* Sidebar */}
-      <aside
-        id="sidebar"
-        className={`w-${isSidebarOpen ? '48' : '20'} bg-gray-900 text-green-400 flex flex-col items-center py-4 space-y-6 transition-all duration-300`}
-      >
-
-        <Link to="/Dashboard" className="flex items-center justify-center">
-          <img src="/assets/logo.png" alt="Logo" className="w-12 h-12" />
-        </Link>
-        <nav id="sidebar-nav" className="flex flex-col items-center space-y-6 mt-4 w-full">
-          <Link to="/employees" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition px-4 w-full justify-start">
-            <span>👥</span>
-            <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Employees</span>
-          </Link> 
-          <Link to="/equipment" className="flex items-center space-x-2 py-1 rounded hover:bg-green-900 transition px-4 w-full justify-start">
-            <span>📦</span>
-            <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Equipment</span>
-          </Link>
-          <Link to="/requests" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition px-4 w-full justify-start">
-            <span>📬</span>
-            <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Requests</span>
-          </Link>
-          <Link to="/analytics" className="flex items-center space-x-2 py-1 rounded hover:bg-green-900 transition px-4 w-full justify-start">
-            <span>📊</span>
-            <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Analytics</span>
-          </Link>
-          <Link to="/reports" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition px-4 w-full justify-start">
-            <span>🗂️</span>
-            <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Reports</span>
-          </Link>
-          <Link to="/settings" className="flex items-center space-x-2 py-1 rounded hover:bg-green-900 transition px-4 w-full justify-start">
-            <span>🛰️</span>
-            <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Settings</span>
-          </Link>
-          <Link to="/support" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition px-4 w-full justify-start">
-            <span>🌐</span>
-            <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Support</span>
-          </Link>
-        </nav>
-      </aside>
+      <Navbar
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+      />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col bg-black">

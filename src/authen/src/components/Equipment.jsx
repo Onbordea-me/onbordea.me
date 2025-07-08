@@ -1,7 +1,10 @@
 // src/components/Equipment.jsx
 import React, { useState, useEffect } from 'react';
+import Navbar from './Navbar'; 
+
 
 const Equipment = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State for sidebar toggle
   const [equipmentCategories, setEquipmentCategories] = useState({
     computers: [
       { name: 'PC', stock: 12, eta: '2 days' },
@@ -121,28 +124,11 @@ const Equipment = () => {
   };
 
   return (
-    <div className="flex h-screen">
-      {/* Sidebar - Placeholder. This should be a separate shared component. */}
-      {/* <aside id="sidebar" className="w-20 bg-gray-900 text-white flex flex-col items-center py-4 space-y-6 transition-all duration-300">
-        <a href="/">
-          <img src="../../assets/logo.png" alt="Logo" />
-        </a>
-        <nav id="sidebar-nav" className="flex flex-col items-center space-y-6 mt-4 w-full">
-          <Link to="/employees" className="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
-            <span>👥</span>
-            <span className="sidebar-label hidden">Employees</span>
-          </Link>
-          <Link to="/equipment" className="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
-            <span>📦</span>
-            <span className="sidebar-label hidden">Equipment</span>
-          </Link>
-          <Link to="/requests" className="flex items-center space-x-2 py-1 rounded hover:bg-gray-800 transition">
-            <span>📬</span>
-            <span className="sidebar-label hidden">Requests</span>
-          </Link>
-          // ... other links
-        </nav>
-      </aside> */}
+    <div className="flex h-screen overflow-hidden font-['IBM Plex Sans'] bg-black">
+      <Navbar
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+      />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
