@@ -1,32 +1,11 @@
-import { useState } from 'react';import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { supabase } from '../supabaseClient'; 
 import Navbar from './Navbar';
+import { Link } from 'react-router-dom';
 
-const initialEmployees = [
-  {
-    name: 'Alice Brown',
-    email: 'alice.brown@example.com',
-    position: 'Software Engineer',
-    location: 'Remote',
-    equipment: ['PC', 'Software License'],
-  },
-  {
-    name: 'John Baker',
-    email: 'john.baker@example.com',
-    position: 'HR Manager',
-    location: 'Office',
-    equipment: ['Desk', 'Phone'],
-  },
-  {
-    name: 'Catherine Taylor',
-    email: 'catherine.taylor@example.com',
-    position: 'Marketing Lead',
-    location: 'Hybrid',
-    equipment: ['Laptop', 'Mouse'],
-  },
-];
 
 export default function EmployeeDashboard() {
-  const [employees, setEmployees] = useState(initialEmployees);
+  const [employees, setEmployees] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -35,24 +14,66 @@ export default function EmployeeDashboard() {
     location: '',
     equipment: '',
   });
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State for sidebar toggle
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [userDisplayName, setUserDisplayName] = useState('Loading...');
+
+  // Helper to fetch employees
+  const fetchEmployees = async () => {
+    const { data, error } = await supabase.from('employees').select('*');
+    if (!error) setEmployees(data || []);
+  };
+
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
+
+  useEffect(() => {
+    async function fetchUser() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session && session.user) {
+        setUserDisplayName(session.user.email); // or session.user.user_metadata.full_name if available
+      } else {
+        setUserDisplayName('Not signed in');
+      }
+    }
+    fetchUser();
+  }, []);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleAddEmployee = (e) => {
+  const handleAddEmployee = async (e) => {
     e.preventDefault();
     const newEmployee = {
-      ...formData,
+      name: formData.name,
+      email: formData.email,
+      position: formData.position,
+      location: formData.location,
       equipment: formData.equipment
         .split(',')
         .map((item) => item.trim())
         .filter(Boolean),
     };
-    setEmployees([...employees, newEmployee]);
-    setFormData({ name: '', email: '', position: '', location: '', equipment: '' });
-    setIsModalOpen(false);
+
+    const { error } = await supabase.from('employees').insert([newEmployee]);
+    if (error) {
+      alert('Error registering employee: ' + error.message);
+    } else {
+      alert('Employee registered!');
+      setFormData({ name: '', email: '', position: '', location: '', equipment: '' });
+      setIsModalOpen(false);
+      await fetchEmployees(); // <-- Always fetch after insert
+    }
+  };
+
+  const handleDeleteEmployee = async (id) => {
+    const { error } = await supabase.from('employees').delete().eq('id', id);
+    if (error) {
+      alert('Error deleting employee: ' + error.message);
+    } else {
+      await fetchEmployees(); // Refresh the list after deletion
+    }
   };
 
   return (
@@ -76,7 +97,7 @@ export default function EmployeeDashboard() {
           </div>
           <div className="flex items-center space-x-4">
             <span>🔔</span>
-            <span className="text-sm">Dominic Keller</span>
+            <span className="text-sm">{userDisplayName}</span>
           </div>
         </header>
 
@@ -123,11 +144,14 @@ export default function EmployeeDashboard() {
                   <strong>Assigned Equipment:</strong>
                 </p>
                 <ul className="text-sm text-gray-600 list-disc list-inside">
-                  {emp.equipment.map((eq, i) => (
-                    <li key={i}>{eq}</li>
-                  ))}
+                  {(Array.isArray(emp.equipment) ? emp.equipment : [emp.equipment]).map((eq, i) =>
+                    eq ? <li key={i}>{eq}</li> : null
+                  )}
                 </ul>
-                <button className="bg-red-500 text-white mt-4 px-3 py-1 rounded hover:bg-red-600 text-sm">
+                <button
+                  className="bg-red-500 text-white mt-4 px-3 py-1 rounded hover:bg-red-600 text-sm"
+                  onClick={() => handleDeleteEmployee(emp.id)}
+                >
                   Deregister Employee
                 </button>
               </div>
