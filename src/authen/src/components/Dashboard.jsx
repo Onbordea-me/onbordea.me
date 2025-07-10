@@ -95,9 +95,11 @@ const Dashboard = () => {
   // --- Requests Loading ---
   const loadRequests = async () => {
     try {
+      // Fetch requests from the 'pedidos' table
       const { data, error } = await supabase.from('pedidos').select('*').order('created_at', { ascending: false });
       if (error) throw error;
       setRequests(data || []);
+      console.log("Loaded requests:", data);
     } catch (err) {
       setRequests([]);
       console.error("Error loading requests:", err);
@@ -116,16 +118,16 @@ const Dashboard = () => {
 
     // Find the employee name based on the selected employee ID
     const selectedEmployeeId = formData.get('employee_id');
-    const employeeName = employees.find(emp => String(emp.id) === String(selectedEmployeeId))?.name || 'N/A';
+    const employeeName = employees.find(emp => emp.id === selectedEmployeeId)?.name || 'N/A';
 
     const dataToInsert = {
       type: formData.get('tipo'),
-      employee: employeeName,
+      // Removed country, phone, email
+      employee: employeeName, // Storing employee name
       equipment: formData.get('equipo'),
       software: formData.get('software'),
-      message: formData.get('message'),
-      status: 'Pendiente', // <-- Add this line
-      // created_at is automatic
+      message: formData.get('message'), // New field for message/description
+      status: 'Pendiente', // Default status for new requests
     };
 
     try {
@@ -136,11 +138,11 @@ const Dashboard = () => {
         e.target.reset();
         loadRequests(); // Refresh the requests table after successful insertion
       } else {
-        console.error('Supabase error during insert:', error);
+        console.error('Supabase error during insert:', error); // Log the full error object
         alert('Error: ' + (error.message || 'Ha ocurrido un error desconocido al crear el pedido.'));
       }
     } catch (err) {
-      console.error('Unexpected error creating request:', err);
+      console.error('Unexpected error creating request:', err); // Log unexpected errors
       alert('Error creating request: ' + (err.message || 'Ha ocurrido un error inesperado.'));
     }
   };
@@ -170,8 +172,9 @@ const Dashboard = () => {
   };
 
   // --- Employee Detail Modal Logic ---
-  const openEmployeeDetail = (request) => {
-    setSelectedEmployee(request);
+  const openEmployeeDetail = (employee) => {
+    // For now, using mockTicketData. In a real app, you'd fetch tickets related to this employee.
+    setSelectedEmployee({ ...employee, tickets: mockTicketData[employee.id] || [] });
     setShowEmployeeDetailModal(true);
   };
 
@@ -306,21 +309,20 @@ const Dashboard = () => {
             </div>
             <form onSubmit={handleNewRequestSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
+                {/* Row 1 */}
                 <div>
-                  <label htmlFor="requestType" className="block text-sm font-medium">Tipo de Pedido</label>
+                  <label htmlFor="requestType" className="block text-sm font-medium text-gray-700">Tipo de Pedido</label>
                   <select id="requestType" name="tipo" className="w-full border rounded px-3 py-2" required>
                     <option value="Onboarding">Onboarding</option>
                     <option value="Offboarding">Offboarding</option>
                     <option value="Mantenimiento">Mantenimiento</option>
                     <option value="Equipment Change">Equipment Change</option>
                     <option value="Support">Support</option>
-                    <option value="Other">Other</option> {/* Corrected: Added value="Other" */}
+                    <option value="Other">Other</option>
                   </select>
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="employeeSelect" className="block text-sm font-medium text-gray-700 mb-1">Nombre del Empleado</label>
+                  <label htmlFor="employeeSelect" className="block text-sm font-medium text-gray-700">Nombre del Empleado</label>
                   <select
                     id="employeeSelect"
                     name="employee_id"
@@ -335,15 +337,14 @@ const Dashboard = () => {
                     ))}
                   </select>
                 </div>
-              
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+
+                {/* Row 2 */}
                 <div>
-                  <label htmlFor="equipmentType" className="block text-sm font-medium">Tipo de Equipo</label>
+                  <label htmlFor="equipmentType" className="block text-sm font-medium text-gray-700">Tipo de Equipo</label>
                   <input type="text" id="equipmentType" name="equipo" className="w-full border rounded px-3 py-2" />
                 </div>
                 <div>
-                  <label htmlFor="softwareRequired" className="block text-sm font-medium">Software Requerido</label>
+                  <label htmlFor="softwareRequired" className="block text-sm font-medium text-gray-700">Software Requerido</label>
                   <select id="softwareRequired" name="software" className="w-full border rounded px-3 py-2">
                     <option value="">Seleccione</option>
                     <option value="Office Suite">Office Suite</option>
@@ -351,11 +352,14 @@ const Dashboard = () => {
                     <option value="Antivirus">Antivirus</option>
                   </select>
                 </div>
-              </div>
+              </div> {/* End of main grid */}
+
+              {/* Message/Description (always full width) */}
               <div>
-                <label htmlFor="messageDescription" className="block text-sm font-medium">Mensaje/Descripción</label>
+                <label htmlFor="messageDescription" className="block text-sm font-medium text-gray-700">Mensaje/Descripción</label>
                 <textarea id="messageDescription" name="message" rows="3" className="w-full border rounded px-3 py-2" placeholder="Detalles adicionales del pedido..."></textarea>
               </div>
+
               <div className="flex justify-end space-x-2 pt-4">
                 <button type="button" onClick={() => setShowNewRequestModal(false)} className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Cancelar</button>
                 <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Crear Pedido</button>
@@ -380,11 +384,11 @@ const Dashboard = () => {
                 </div>
                 <div>
                   <h3 id="employeeName" className="font-medium text-lg">{selectedEmployee.employee}</h3>
-                  <p id="employeeCountry" className="text-sm text-gray-500">{selectedEmployee.country}</p>
+                  <p id="employeeCountry" className="text-sm text-gray-700">{selectedEmployee.country}</p> {/* Changed color */}
                 </div>
               </div>
               <div>
-                <h4 className="font-semibold mb-2">Tickets Asociados</h4>
+                <h4 className="font-semibold mb-2 text-gray-700">Tickets Asociados</h4> {/* Changed color */}
                 <table className="w-full text-sm border">
                   <thead>
                     <tr className="bg-gray-100">
@@ -427,23 +431,23 @@ const Dashboard = () => {
             </div>
             <form onSubmit={handleAddEmployeeSubmit} className="space-y-4">
               <div>
-                <label htmlFor="employeeName" className="block text-sm font-medium">Nombre</label>
+                <label htmlFor="employeeName" className="block text-sm font-medium text-gray-700">Nombre</label>
                 <input type="text" id="employeeName" name="name" className="w-full border rounded px-3 py-2" required />
               </div>
               <div>
-                <label htmlFor="employeeEmail" className="block text-sm font-medium">Email</label>
+                <label htmlFor="employeeEmail" className="block text-sm font-medium text-gray-700">Email</label>
                 <input type="email" id="employeeEmail" name="email" className="w-full border rounded px-3 py-2" required />
               </div>
               <div>
-                <label htmlFor="employeePosition" className="block text-sm font-medium">Puesto</label>
+                <label htmlFor="employeePosition" className="block text-sm font-medium text-gray-700">Puesto</label>
                 <input type="text" id="employeePosition" name="position" className="w-full border rounded px-3 py-2" />
               </div>
               <div>
-                <label htmlFor="employeeLocation" className="block text-sm font-medium">Ubicación</label>
+                <label htmlFor="employeeLocation" className="block text-sm font-medium text-gray-700">Ubicación</label>
                 <input type="text" id="employeeLocation" name="location" className="w-full border rounded px-3 py-2" />
               </div>
               <div>
-                <label htmlFor="employeeEquipment" className="block text-sm font-medium">Equipo (opcional, separado por comas)</label>
+                <label htmlFor="employeeEquipment" className="block text-sm font-medium text-gray-700">Equipo (opcional, separado por comas)</label>
                 <input type="text" id="employeeEquipment" name="equipment" className="w-full border rounded px-3 py-2" />
               </div>
               <div className="flex justify-end space-x-2 pt-4">
