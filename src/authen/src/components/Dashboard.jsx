@@ -32,8 +32,7 @@ const Dashboard = () => {
 
   // --- Data State ---
   const [employees, setEmployees] = useState([]);
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
-
+  const [selectedEmployee, setSelectedEmployee] = useState("");
   
   // --- Auth & Profile Loading ---
   useEffect(() => {
@@ -86,9 +85,6 @@ const Dashboard = () => {
 
   // --- Employees Loading ---
   const loadEmployees = async () => {
-    try {
-      const response = await fetch('./backend/routes/employees.json');
-      const data = await response.json();
   try {
     const { data, error } = await supabase.from('employees').select('id, name');
     if (error) throw error;
@@ -108,12 +104,9 @@ const Dashboard = () => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const data = {
-      tipo: formData.get('tipo'),
-      pais: formData.get('pais'),
-      nombre: formData.get('nombre'),
       tipo: formData.get('type'),
       pais: formData.get('country'),
-      employee_id: selectedEmployee?.id,
+      nombre: formData.get('nombre'),
       telefono: formData.get('phone'),
       email: formData.get('email'),
       equipo: formData.get('equipment'),
@@ -339,19 +332,20 @@ const Dashboard = () => {
                     name="nombre"
                     required
                     className="w-full border rounded px-3 py-2"
-                    onChange={handleEmployeeSelectChange}
-                        setShowAddEmployeeModal(true);
-                        setSelectedEmployee(""); // or null
-                      } else {
-                        const emp = employees.find(emp => emp.name === e.target.value);
-                        setSelectedEmployee(emp);
-                      }
-                    }}
-                    value={selectedEmployee?.name || ""}
+                    onChange={e => {
+                    if (e.target.value === 'new') {
+                      setShowAddEmployeeModal(true);
+                      setSelectedEmployee(""); // or null
+                    } else {
+                      const emp = employees.find(emp => emp.name === e.target.value);
+                      setSelectedEmployee(emp);
+                    }
+                  }}
+                    value={selectedEmployee || ""}
                   >
                     <option value="">Seleccione Empleado</option>
                     {employees.map(emp => (
-                      <option key={emp.id || emp.name} value={emp.name}>
+                      <option key={emp.id} value={emp.name}>
                         {emp.name}
                       </option>
                     ))}
