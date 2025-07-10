@@ -13,6 +13,7 @@ export default function EmployeeDashboard() {
     position: '',
     location: '',
     equipment: '',
+    status: 'active',
   });
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [userDisplayName, setUserDisplayName] = useState('Loading...');
@@ -54,6 +55,7 @@ export default function EmployeeDashboard() {
         .split(',')
         .map((item) => item.trim())
         .filter(Boolean),
+        status: formData.status,
     };
 
     const { error } = await supabase.from('employees').insert([newEmployee]);
@@ -61,7 +63,7 @@ export default function EmployeeDashboard() {
       alert('Error registering employee: ' + error.message);
     } else {
       alert('Employee registered!');
-      setFormData({ name: '', email: '', position: '', location: '', equipment: '' });
+      setFormData({ name: '', email: '', position: '', location: '', equipment: '',  status: 'active' });
       setIsModalOpen(false);
       await fetchEmployees(); // <-- Always fetch after insert
     }
@@ -148,11 +150,14 @@ export default function EmployeeDashboard() {
                     eq ? <li key={i}>{eq}</li> : null
                   )}
                 </ul>
+                <p className="text-sm text-gray-700">
+                  <strong>Status:</strong> {emp.status}
+                </p>
                 <button
                   className="bg-red-500 text-white mt-4 px-3 py-1 rounded hover:bg-red-600 text-sm"
                   onClick={() => handleDeleteEmployee(emp.id)}
                 >
-                  Deregister Employee
+                  Offboard Employee
                 </button>
               </div>
             ))}
@@ -210,6 +215,17 @@ export default function EmployeeDashboard() {
                 placeholder="Assigned Equipment (comma separated)"
                 className="w-full border rounded px-3 py-2"
               />
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleInputChange}
+                required
+                className="w-full border rounded px-3 py-2"
+              >
+                <option value="onboarding">Onboarding</option>
+                <option value="active">Active</option>
+                <option value="offboarding">Offboarding</option>
+              </select>
               <div className="flex justify-end space-x-2">
                 <button
                   type="button"
