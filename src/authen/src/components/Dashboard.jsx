@@ -34,6 +34,7 @@ const Dashboard = () => {
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
+  
   // --- Auth & Profile Loading ---
   useEffect(() => {
     async function checkAuthAndLoadUserInfo() {
@@ -88,11 +89,16 @@ const Dashboard = () => {
     try {
       const response = await fetch('./backend/routes/employees.json');
       const data = await response.json();
-      setEmployees(data);
-    } catch (err) {
-      setEmployees([]);
-    }
-  };
+  try {
+    const { data, error } = await supabase.from('employees').select('id, name');
+    if (error) throw error;
+    setEmployees(data || []);
+    console.log("Loaded employees:", data); // <-- Add this line
+  } catch (err) {
+    setEmployees([]);
+    console.log("Error loading employees:", err); // <-- Add this line
+  }
+};
   useEffect(() => {
     if (showNewRequestModal) loadEmployees();
   }, [showNewRequestModal]);
@@ -105,9 +111,12 @@ const Dashboard = () => {
       tipo: formData.get('tipo'),
       pais: formData.get('pais'),
       nombre: formData.get('nombre'),
-      telefono: formData.get('telefono'),
+      tipo: formData.get('type'),
+      pais: formData.get('country'),
+      employee_id: selectedEmployee?.id,
+      telefono: formData.get('phone'),
       email: formData.get('email'),
-      equipo: formData.get('equipo'),
+      equipo: formData.get('equipment'),
       software: formData.get('software')
     };
     try {
@@ -331,6 +340,13 @@ const Dashboard = () => {
                     required
                     className="w-full border rounded px-3 py-2"
                     onChange={handleEmployeeSelectChange}
+                        setShowAddEmployeeModal(true);
+                        setSelectedEmployee(""); // or null
+                      } else {
+                        const emp = employees.find(emp => emp.name === e.target.value);
+                        setSelectedEmployee(emp);
+                      }
+                    }}
                     value={selectedEmployee?.name || ""}
                   >
                     <option value="">Seleccione Empleado</option>
