@@ -95,11 +95,9 @@ const Dashboard = () => {
   // --- Requests Loading ---
   const loadRequests = async () => {
     try {
-      // Fetch requests from the 'pedidos' table
       const { data, error } = await supabase.from('pedidos').select('*').order('created_at', { ascending: false });
       if (error) throw error;
       setRequests(data || []);
-      console.log("Loaded requests:", data);
     } catch (err) {
       setRequests([]);
       console.error("Error loading requests:", err);
@@ -118,18 +116,16 @@ const Dashboard = () => {
 
     // Find the employee name based on the selected employee ID
     const selectedEmployeeId = formData.get('employee_id');
-    const employeeName = employees.find(emp => emp.id === selectedEmployeeId)?.name || 'N/A';
+    const employeeName = employees.find(emp => String(emp.id) === String(selectedEmployeeId))?.name || 'N/A';
 
     const dataToInsert = {
       type: formData.get('tipo'),
-      country: formData.get('pais'),
-      employee: employeeName, // Storing employee name
-      phone: formData.get('telefono'),
-      email: formData.get('email'),
+      employee: employeeName,
       equipment: formData.get('equipo'),
       software: formData.get('software'),
-      message: formData.get('message'), // New field for message/description
-      status: 'Pendiente', // Default status for new requests
+      message: formData.get('message'),
+      status: 'Pendiente', // <-- Add this line
+      // created_at is automatic
     };
 
     try {
@@ -140,11 +136,11 @@ const Dashboard = () => {
         e.target.reset();
         loadRequests(); // Refresh the requests table after successful insertion
       } else {
-        console.error('Supabase error during insert:', error); // Log the full error object
+        console.error('Supabase error during insert:', error);
         alert('Error: ' + (error.message || 'Ha ocurrido un error desconocido al crear el pedido.'));
       }
     } catch (err) {
-      console.error('Unexpected error creating request:', err); // Log unexpected errors
+      console.error('Unexpected error creating request:', err);
       alert('Error creating request: ' + (err.message || 'Ha ocurrido un error inesperado.'));
     }
   };
@@ -174,9 +170,8 @@ const Dashboard = () => {
   };
 
   // --- Employee Detail Modal Logic ---
-  const openEmployeeDetail = (employee) => {
-    // For now, using mockTicketData. In a real app, you'd fetch tickets related to this employee.
-    setSelectedEmployee({ ...employee, tickets: mockTicketData[employee.id] || [] });
+  const openEmployeeDetail = (request) => {
+    setSelectedEmployee(request);
     setShowEmployeeDetailModal(true);
   };
 
@@ -322,10 +317,6 @@ const Dashboard = () => {
                     <option value="Other">Other</option> {/* Corrected: Added value="Other" */}
                   </select>
                 </div>
-                <div>
-                  <label htmlFor="country" className="block text-sm font-medium">País</label>
-                  <input type="text" id="country" name="pais" className="w-full border rounded px-3 py-2" placeholder="Ej: USA" required />
-                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -344,14 +335,7 @@ const Dashboard = () => {
                     ))}
                   </select>
                 </div>
-                <div>
-                  <label htmlFor="phoneNumber" className="block text-sm font-medium">Teléfono</label>
-                  <input type="text" id="phoneNumber" name="telefono" className="w-full border rounded px-3 py-2" />
-                </div>
-              </div>
-              <div>
-                <label htmlFor="emailAddress" className="block text-sm font-medium">Dirección Email</label>
-                <input type="email" id="emailAddress" name="email" className="w-full border rounded px-3 py-2" required />
+              
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
