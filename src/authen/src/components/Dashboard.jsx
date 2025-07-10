@@ -333,14 +333,13 @@ const Dashboard = () => {
                     required
                     className="w-full border rounded px-3 py-2"
                     onChange={e => {
-                    if (e.target.value === 'new') {
-                      setShowAddEmployeeModal(true);
-                      setSelectedEmployee(""); // or null
-                    } else {
-                      const emp = employees.find(emp => emp.name === e.target.value);
-                      setSelectedEmployee(emp);
-                    }
-                  }}
+                      if (e.target.value === 'new') {
+                        setShowAddEmployeeModal(true);
+                        setSelectedEmployee(""); // Reset selection
+                      } else {
+                        setSelectedEmployee(e.target.value);
+                      }
+                    }}
                     value={selectedEmployee || ""}
                   >
                     <option value="">Seleccione Empleado</option>
