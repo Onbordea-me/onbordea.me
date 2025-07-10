@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
 import { UserAuth } from "../context/AuthContext";
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Navbar from './Navbar';
-
-// --- Supabase Setup ---
-const SUPABASE_URL = 'https://plztqnszikysepsoawhy.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBlenRxbnN6aWt5c2Vwc29hd2h5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAxODAxNTUsImV4cCI6MjA2NTc1NjE1NX0.Sjqk7ulL4wW8dg1hyyEP2NVCsMd0RcNbUUN8X1WQEog';
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+import { supabase } from '../supabaseClient'; 
 
 // --- Mock Data for Employee Detail Modal ---
 const mockTicketData = {
@@ -96,38 +91,29 @@ const Dashboard = () => {
   }
 };
   useEffect(() => {
-    if (showNewRequestModal) loadEmployees();
-  }, [showNewRequestModal]);
+    loadEmployees();
+  }, []);
 
   // --- New Request Form Submission ---
   const handleNewRequestSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const data = {
-      tipo: formData.get('type'),
-      pais: formData.get('country'),
-      nombre: formData.get('nombre'),
-      telefono: formData.get('phone'),
+      tipo: formData.get('tipo'),
+      pais: formData.get('pais'),
+      employee_id: formData.get('employee_id'), // use the id
+      telefono: formData.get('telefono'),
       email: formData.get('email'),
-      equipo: formData.get('equipment'),
+      equipo: formData.get('equipo'),
       software: formData.get('software')
     };
-    try {
-      const res = await fetch('/api/pedidos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      if (res.ok) {
-        alert('Pedido creado exitosamente');
-        setShowNewRequestModal(false);
-        e.target.reset();
-      } else {
-        const err = await res.json();
-        alert('Error: ' + (err.error || 'No se pudo crear el pedido'));
-      }
-    } catch (err) {
-      alert('Error: ' + err.message);
+    const { error } = await supabase.from('pedidos').insert([data]);
+    if (!error) {
+      alert('Pedido creado exitosamente');
+      setShowNewRequestModal(false);
+      e.target.reset();
+    } else {
+      alert('Error: ' + error.message);
     }
   };
 
@@ -329,7 +315,7 @@ const Dashboard = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del Empleado</label>
                   <select
                     id="employeeSelect"
-                    name="nombre"
+                    name="employee_id"
                     required
                     className="w-full border rounded px-3 py-2"
                     onChange={e => {
@@ -344,7 +330,7 @@ const Dashboard = () => {
                   >
                     <option value="">Seleccione Empleado</option>
                     {employees.map(emp => (
-                      <option key={emp.id} value={emp.name}>
+                      <option key={emp.id} value={emp.id}>
                         {emp.name}
                       </option>
                     ))}
