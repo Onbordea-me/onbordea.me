@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { UserAuth } from "../context/AuthContext";
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import Navbar from './Navbar';
-import { supabase } from '../supabaseClient'; 
+import Navbar from './NavBar';
+import { supabase } from '../supabaseClient';
 
-// --- Mock Data for Employee Detail Modal ---
+// --- Mock Data for Employee Detail Modal (Consider fetching this from Supabase as well) ---
 const mockTicketData = {
   123: [
     { ticket: 'Onboarding', status: 'Completado', date: '1 ene. 2024' },
@@ -27,8 +27,9 @@ const Dashboard = () => {
 
   // --- Data State ---
   const [employees, setEmployees] = useState([]);
+  const [requests, setRequests] = useState([]); // New state for requests
   const [selectedEmployee, setSelectedEmployee] = useState("");
-  
+
   // --- Auth & Profile Loading ---
   useEffect(() => {
     async function checkAuthAndLoadUserInfo() {
@@ -52,8 +53,8 @@ const Dashboard = () => {
           setUserDisplayName(profile.name);
         }
       } catch (profileFetchError) {
-        console.error('Network or unexpected error fetching profile:', profileFetchError);
-      }
+            console.error('Network or unexpected error fetching profile:', profileFetchError);
+        }
     }
     checkAuthAndLoadUserInfo();
 
@@ -80,40 +81,71 @@ const Dashboard = () => {
 
   // --- Employees Loading ---
   const loadEmployees = async () => {
-  try {
-    const { data, error } = await supabase.from('employees').select('id, name');
-    if (error) throw error;
-    setEmployees(data || []);
-    console.log("Loaded employees:", data); // <-- Add this line
-  } catch (err) {
-    setEmployees([]);
-    console.log("Error loading employees:", err); // <-- Add this line
-  }
-};
+    try {
+      const { data, error } = await supabase.from('employees').select('id, name');
+      if (error) throw error;
+      setEmployees(data || []);
+      console.log("Loaded employees:", data);
+    } catch (err) {
+      setEmployees([]);
+      console.log("Error loading employees:", err);
+    }
+  };
+
+  // --- Requests Loading ---
+  const loadRequests = async () => {
+    try {
+      // Fetch requests from the 'pedidos' table
+      const { data, error } = await supabase.from('pedidos').select('*').order('created_at', { ascending: false });
+      if (error) throw error;
+      setRequests(data || []);
+      console.log("Loaded requests:", data);
+    } catch (err) {
+      setRequests([]);
+      console.error("Error loading requests:", err);
+    }
+  };
+
   useEffect(() => {
     loadEmployees();
+    loadRequests(); // Load requests on component mount
   }, []);
 
   // --- New Request Form Submission ---
   const handleNewRequestSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const data = {
-      tipo: formData.get('tipo'),
-      pais: formData.get('pais'),
-      employee_id: formData.get('employee_id'), // use the id
-      telefono: formData.get('telefono'),
+
+    // Find the employee name based on the selected employee ID
+    const selectedEmployeeId = formData.get('employee_id');
+    const employeeName = employees.find(emp => emp.id === selectedEmployeeId)?.name || 'N/A';
+
+    const dataToInsert = {
+      type: formData.get('tipo'),
+      country: formData.get('pais'),
+      employee: employeeName, // Storing employee name
+      phone: formData.get('telefono'),
       email: formData.get('email'),
-      equipo: formData.get('equipo'),
-      software: formData.get('software')
+      equipment: formData.get('equipo'),
+      software: formData.get('software'),
+      message: formData.get('message'), // New field for message/description
+      status: 'Pendiente', // Default status for new requests
     };
-    const { error } = await supabase.from('pedidos').insert([data]);
-    if (!error) {
-      alert('Pedido creado exitosamente');
-      setShowNewRequestModal(false);
-      e.target.reset();
-    } else {
-      alert('Error: ' + error.message);
+
+    try {
+      const { error } = await supabase.from('pedidos').insert([dataToInsert]);
+      if (!error) {
+        alert('Pedido creado exitosamente');
+        setShowNewRequestModal(false);
+        e.target.reset();
+        loadRequests(); // Refresh the requests table after successful insertion
+      } else {
+        console.error('Supabase error during insert:', error); // Log the full error object
+        alert('Error: ' + (error.message || 'Ha ocurrido un error desconocido al crear el pedido.'));
+      }
+    } catch (err) {
+      console.error('Unexpected error creating request:', err); // Log unexpected errors
+      alert('Error creating request: ' + (err.message || 'Ha ocurrido un error inesperado.'));
     }
   };
 
@@ -129,29 +161,23 @@ const Dashboard = () => {
       equipment: formData.get('equipment')?.split(',').map(item => item.trim())
     };
     try {
-      await fetch('./backend/employees.json', {
-        method: 'POST',
-        body: JSON.stringify(newEmployee),
-        headers: { 'Content-Type': 'application/json' }
-      });
+      // Assuming 'employees' is a Supabase table, not a local JSON file
+      const { data, error } = await supabase.from('employees').insert([newEmployee]);
+      if (error) throw error;
       alert('Empleado registrado exitosamente');
       setShowAddEmployeeModal(false);
       e.target.reset();
-      loadEmployees();
+      loadEmployees(); // Refresh the employees list
     } catch (err) {
       alert('Error registering employee: ' + err.message);
     }
   };
 
   // --- Employee Detail Modal Logic ---
-  const openEmployeeDetail = (id, name, country) => {
-    setSelectedEmployee({ id, name, country });
+  const openEmployeeDetail = (employee) => {
+    // For now, using mockTicketData. In a real app, you'd fetch tickets related to this employee.
+    setSelectedEmployee({ ...employee, tickets: mockTicketData[employee.id] || [] });
     setShowEmployeeDetailModal(true);
-  };
-
-  // --- Handle "Register New Employee" Option ---
-  const handleEmployeeSelectChange = (e) => {
-    if (e.target.value === 'new') setShowAddEmployeeModal(true);
   };
 
   // --- Loading or Not Authenticated ---
@@ -170,13 +196,12 @@ const Dashboard = () => {
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col bg-black">
+      <div className={`flex-1 flex flex-col bg-black ${isSidebarOpen ? 'ml-48' : 'ml-20'} transition-all duration-300`}>
         {/* Top Navbar */}
         <header className="flex items-center justify-between px-6 py-4 bg-gray-900 shadow">
           <div className="flex items-center space-x-4">
-            <button id="sidebar-toggle" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="text-green-400 text-xl">
-              ☰
-            </button>
+            {/* The toggle button is now handled by the Navbar component */}
+            <h1 className="text-lg font-semibold text-green-300">Dashboard</h1>
             <input type="text" placeholder="Search..." className="px-3 py-1 border rounded-md text-sm focus:outline-none bg-gray-800 text-green-200 border-green-700" />
             <button className="bg-blue-600 text-white px-4 py-1 rounded text-sm hover:bg-green-600">Search</button>
           </div>
@@ -198,15 +223,15 @@ const Dashboard = () => {
             <div className="flex gap-4 flex-wrap">
               <div className="bg-blue-900 text-green-300 p-4 rounded shadow w-40">
                 <p className="text-sm font-semibold">Empleados Activos</p>
-                <p className="text-2xl font-bold">25</p>
+                <p className="text-2xl font-bold">{employees.length}</p>
               </div>
               <div className="bg-black border border-blue-900 p-4 rounded shadow w-40 text-blue-400">
                 <p className="text-sm font-semibold">Tickets Abiertos</p>
-                <p className="text-2xl font-bold">3</p>
+                <p className="text-2xl font-bold">{requests.filter(req => req.status === 'Pendiente' || req.status === 'En preparación').length}</p>
               </div>
               <div className="bg-black border border-green-900 p-4 rounded shadow w-40 text-green-400">
                 <p className="text-sm font-semibold">Tickets en Proceso</p>
-                <p className="text-2xl font-bold">6</p>
+                <p className="text-2xl font-bold">{requests.filter(req => req.status === 'En proceso').length}</p>
               </div>
               <div className="bg-black border border-green-900 p-4 rounded shadow w-56 text-green-300">
                 <p className="text-sm font-semibold">Últimos Movimientos</p>
@@ -234,52 +259,41 @@ const Dashboard = () => {
                     <th className="px-4 py-2 text-left">Empleado</th>
                     <th className="px-4 py-2 text-left">Estado</th>
                     <th className="px-4 py-2 text-left">Fecha de Creación</th>
-                    <th className="px-4 py-2 text-left">Fecha de Actualiz.</th>
+                    {/* <th className="px-4 py-2 text-left">Fecha de Actualiz.</th> */}
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="border-t">
-                    <td className="px-4 py-2">Onboarding</td>
-                    <td>
-                      <button
-                        onClick={() => openEmployeeDetail('123', 'Anna Martinez', 'USA')}
-                        className="text-blue-600 hover:underline"
-                      >
-                        Anna Martinez
-                      </button>
-                    </td>
-                    <td className="px-4 py-2"><span className="bg-yellow-200 text-yellow-800 px-2 py-1 rounded text-xs">En preparación</span></td>
-                    <td className="px-4 py-2">24 abr 2024</td>
-                    <td className="px-4 py-2">25 abr 2024</td>
-                  </tr>
-                  <tr className="border-t">
-                    <td className="px-4 py-2">Offboarding</td>
-                    <td>
-                      <button
-                        onClick={() => openEmployeeDetail('123', 'Laura Sanchez', 'Mexico')}
-                        className="text-blue-600 hover:underline"
-                      >
-                        Laura Sanchez
-                      </button>
-                    </td>
-                    <td className="px-4 py-2"><span className="bg-blue-200 text-blue-800 px-2 py-1 rounded text-xs">Solicitado</span></td>
-                    <td className="px-4 py-2">23 abr 2024</td>
-                    <td className="px-4 py-2">23 abr 2024</td>
-                  </tr>
-                  <tr className="border-t">
-                    <td className="px-4 py-2">Mantenimiento</td>
-                    <td>
-                      <button
-                        onClick={() => openEmployeeDetail('123', 'Juan Gonzalez', 'Spain')}
-                        className="text-blue-600 hover:underline"
-                      >
-                        Juan Gonzalez
-                      </button>
-                    </td>
-                    <td className="px-4 py-2"><span className="bg-green-200 text-green-800 px-2 py-1 rounded text-xs">En proceso</span></td>
-                    <td className="px-4 py-2">22 abr 2024</td>
-                    <td className="px-4 py-2">24 abr 2024</td>
-                  </tr>
+                  {requests.length > 0 ? (
+                    requests.map((request) => (
+                      <tr key={request.id} className="border-t">
+                        <td className="px-4 py-2">{request.type}</td>
+                        <td className="px-4 py-2">
+                          <button
+                            onClick={() => openEmployeeDetail(request)} // Pass the whole request object
+                            className="text-blue-600 hover:underline"
+                          >
+                            {request.employee}
+                          </button>
+                        </td>
+                        <td className="px-4 py-2">
+                          <span className={`px-2 py-1 rounded text-xs ${
+                            request.status === 'Pendiente' ? 'bg-yellow-200 text-yellow-800' :
+                            request.status === 'En proceso' ? 'bg-blue-200 text-blue-800' :
+                            request.status === 'Completado' ? 'bg-green-200 text-green-800' :
+                            'bg-gray-200 text-gray-800'
+                          }`}>
+                            {request.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2">{new Date(request.created_at).toLocaleDateString('es-AR')}</td>
+                        {/* <td className="px-4 py-2"></td> */}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" className="px-4 py-2 text-center text-gray-500">No hay pedidos recientes.</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -298,35 +312,29 @@ const Dashboard = () => {
             <form onSubmit={handleNewRequestSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium">Tipo de Pedido</label>
-                  <select name="tipo" className="w-full border rounded px-3 py-2" required>
+                  <label htmlFor="requestType" className="block text-sm font-medium">Tipo de Pedido</label>
+                  <select id="requestType" name="tipo" className="w-full border rounded px-3 py-2" required>
                     <option value="Onboarding">Onboarding</option>
                     <option value="Offboarding">Offboarding</option>
                     <option value="Mantenimiento">Mantenimiento</option>
+                    <option value="Equipment Change">Equipment Change</option>
+                    <option value="Support">Support</option>
+                    <option value="Other">Other</option> {/* Corrected: Added value="Other" */}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium">País</label>
-                  <input type="text" name="pais" className="w-full border rounded px-3 py-2" placeholder="Ej: USA" required />
+                  <label htmlFor="country" className="block text-sm font-medium">País</label>
+                  <input type="text" id="country" name="pais" className="w-full border rounded px-3 py-2" placeholder="Ej: USA" required />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del Empleado</label>
+                  <label htmlFor="employeeSelect" className="block text-sm font-medium text-gray-700 mb-1">Nombre del Empleado</label>
                   <select
                     id="employeeSelect"
                     name="employee_id"
                     required
                     className="w-full border rounded px-3 py-2"
-                    onChange={e => {
-                      if (e.target.value === 'new') {
-                        setShowAddEmployeeModal(true);
-                        setSelectedEmployee(""); // Reset selection
-                      } else {
-                        setSelectedEmployee(e.target.value);
-                      }
-                    }}
-                    value={selectedEmployee || ""}
                   >
                     <option value="">Seleccione Empleado</option>
                     {employees.map(emp => (
@@ -334,32 +342,35 @@ const Dashboard = () => {
                         {emp.name}
                       </option>
                     ))}
-                    <option value="new">Register New Employee</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium">Teléfono</label>
-                  <input type="text" name="telefono" className="w-full border rounded px-3 py-2" />
+                  <label htmlFor="phoneNumber" className="block text-sm font-medium">Teléfono</label>
+                  <input type="text" id="phoneNumber" name="telefono" className="w-full border rounded px-3 py-2" />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium">Dirección Email</label>
-                <input type="email" name="email" className="w-full border rounded px-3 py-2" required />
+                <label htmlFor="emailAddress" className="block text-sm font-medium">Dirección Email</label>
+                <input type="email" id="emailAddress" name="email" className="w-full border rounded px-3 py-2" required />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium">Tipo de Equipo</label>
-                  <input type="text" name="equipo" className="w-full border rounded px-3 py-2" />
+                  <label htmlFor="equipmentType" className="block text-sm font-medium">Tipo de Equipo</label>
+                  <input type="text" id="equipmentType" name="equipo" className="w-full border rounded px-3 py-2" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium">Software Requerido</label>
-                  <select name="software" className="w-full border rounded px-3 py-2">
+                  <label htmlFor="softwareRequired" className="block text-sm font-medium">Software Requerido</label>
+                  <select id="softwareRequired" name="software" className="w-full border rounded px-3 py-2">
                     <option value="">Seleccione</option>
                     <option value="Office Suite">Office Suite</option>
                     <option value="Design Tools">Design Tools</option>
                     <option value="Antivirus">Antivirus</option>
                   </select>
                 </div>
+              </div>
+              <div>
+                <label htmlFor="messageDescription" className="block text-sm font-medium">Mensaje/Descripción</label>
+                <textarea id="messageDescription" name="message" rows="3" className="w-full border rounded px-3 py-2" placeholder="Detalles adicionales del pedido..."></textarea>
               </div>
               <div className="flex justify-end space-x-2 pt-4">
                 <button type="button" onClick={() => setShowNewRequestModal(false)} className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Cancelar</button>
@@ -381,34 +392,37 @@ const Dashboard = () => {
             <div id="employeeDetailContent">
               <div className="flex items-center space-x-4 mb-4">
                 <div className="h-12 w-12 bg-gray-300 rounded-full flex items-center justify-center font-semibold text-gray-700">
-                  <span id="employeeInitials">{selectedEmployee.name.split(' ').map(w => w[0]).join('').toUpperCase()}</span>
+                  <span id="employeeInitials">{selectedEmployee.employee.split(' ').map(w => w[0]).join('').toUpperCase()}</span>
                 </div>
                 <div>
-                  <h3 id="employeeName" className="font-medium text-lg">{selectedEmployee.name}</h3>
+                  <h3 id="employeeName" className="font-medium text-lg">{selectedEmployee.employee}</h3>
                   <p id="employeeCountry" className="text-sm text-gray-500">{selectedEmployee.country}</p>
                 </div>
               </div>
               <div>
-                <h4 className="font-semibold mb-2">Equipos Asignados</h4>
+                <h4 className="font-semibold mb-2">Tickets Asociados</h4>
                 <table className="w-full text-sm border">
                   <thead>
                     <tr className="bg-gray-100">
-                      <th className="p-2 text-left">Ticket</th>
+                      <th className="p-2 text-left">Tipo</th>
                       <th className="p-2 text-left">Estado</th>
-                      <th className="p-2 text-left">Fecha</th>
+                      <th className="p-2 text-left">Fecha de Creación</th>
+                      <th className="p-2 text-left">Mensaje</th>
                     </tr>
                   </thead>
-                  <tbody id="employeeTickets">
-                    {(mockTicketData[selectedEmployee.id] || []).map((ticket, index) => (
-                      <tr key={index} className="border-t">
-                        <td className="p-2">{ticket.ticket}</td>
-                        <td className="p-2">{ticket.status}</td>
-                        <td className="p-2">{ticket.date}</td>
-                      </tr>
-                    ))}
-                    {!(mockTicketData[selectedEmployee.id] && mockTicketData[selectedEmployee.id].length > 0) && (
+                  <tbody>
+                    {requests.filter(req => req.employee === selectedEmployee.employee).length > 0 ? (
+                      requests.filter(req => req.employee === selectedEmployee.employee).map((ticket, index) => (
+                        <tr key={index} className="border-t">
+                          <td className="p-2">{ticket.type}</td>
+                          <td className="p-2">{ticket.status}</td>
+                          <td className="p-2">{new Date(ticket.created_at).toLocaleDateString('es-AR')}</td>
+                          <td className="p-2">{ticket.message}</td>
+                        </tr>
+                      ))
+                    ) : (
                       <tr>
-                        <td colSpan="3" className="p-2 text-center text-gray-500">No tickets found.</td>
+                        <td colSpan="4" className="p-2 text-center text-gray-500">No tickets found for this employee.</td>
                       </tr>
                     )}
                   </tbody>
@@ -429,24 +443,24 @@ const Dashboard = () => {
             </div>
             <form onSubmit={handleAddEmployeeSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium">Nombre</label>
-                <input type="text" name="name" className="w-full border rounded px-3 py-2" required />
+                <label htmlFor="employeeName" className="block text-sm font-medium">Nombre</label>
+                <input type="text" id="employeeName" name="name" className="w-full border rounded px-3 py-2" required />
               </div>
               <div>
-                <label className="block text-sm font-medium">Email</label>
-                <input type="email" name="email" className="w-full border rounded px-3 py-2" required />
+                <label htmlFor="employeeEmail" className="block text-sm font-medium">Email</label>
+                <input type="email" id="employeeEmail" name="email" className="w-full border rounded px-3 py-2" required />
               </div>
               <div>
-                <label className="block text-sm font-medium">Puesto</label>
-                <input type="text" name="position" className="w-full border rounded px-3 py-2" />
+                <label htmlFor="employeePosition" className="block text-sm font-medium">Puesto</label>
+                <input type="text" id="employeePosition" name="position" className="w-full border rounded px-3 py-2" />
               </div>
               <div>
-                <label className="block text-sm font-medium">Ubicación</label>
-                <input type="text" name="location" className="w-full border rounded px-3 py-2" />
+                <label htmlFor="employeeLocation" className="block text-sm font-medium">Ubicación</label>
+                <input type="text" id="employeeLocation" name="location" className="w-full border rounded px-3 py-2" />
               </div>
               <div>
-                <label className="block text-sm font-medium">Equipo (opcional, separado por comas)</label>
-                <input type="text" name="equipment" className="w-full border rounded px-3 py-2" />
+                <label htmlFor="employeeEquipment" className="block text-sm font-medium">Equipo (opcional, separado por comas)</label>
+                <input type="text" id="employeeEquipment" name="equipment" className="w-full border rounded px-3 py-2" />
               </div>
               <div className="flex justify-end space-x-2 pt-4">
                 <button type="button" onClick={() => setShowAddEmployeeModal(false)} className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Cancelar</button>
