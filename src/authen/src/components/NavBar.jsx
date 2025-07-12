@@ -11,7 +11,7 @@ const Navbar = ({ isSidebarOpen = true, setIsSidebarOpen }) => {
     >
       <div className="flex justify-center">
         <Link to="/dashboard">
-          <img src="/assets/logo.png" alt="Logo" className="w-12 h-12" />
+          <img src="/assets/logo.png" alt="Logo" className="w-18 h-12" />
         </Link>
       </div>
       <nav className="flex flex-col items-center space-y-6 mt-4">
