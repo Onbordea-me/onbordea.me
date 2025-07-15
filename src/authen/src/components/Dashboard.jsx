@@ -94,25 +94,25 @@ const Dashboard = () => {
 
   // --- Requests Loading ---
   const loadRequests = async () => {
-    try {
-      // Fetch requests from the 'pedidos' table
-      const { data, error } = await supabase.from('pedidos').select('*').order('created_at', { ascending: false });
-      if (error) throw error;
-      setRequests(data || []);
-      console.log("Loaded requests:", data);
-    } catch (err) {
-      setRequests([]);
-      console.error("Error loading requests:", err);
-    }
-  };
+      try {
+        // Fetch requests from the 'pedidos' table
+        const { data, error } = await supabase.from('pedidos').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+        setRequests(data || []);
+        console.log("Loaded requests:", data);
+      } catch (err) {
+        setRequests([]);
+        console.error("Error loading requests:", err);
+      }
+    };
 
-  useEffect(() => {
-    loadEmployees();
-    loadRequests(); // Load requests on component mount
-  }, []);
+    useEffect(() => {
+      loadEmployees();
+      loadRequests(); // Load requests on component mount
+    }, []);
 
-  // --- New Request Form Submission ---
-  const handleNewRequestSubmit = async (e) => {
+    // --- New Request Form Submission ---
+    const handleNewRequestSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
 
@@ -120,14 +120,21 @@ const Dashboard = () => {
     const selectedEmployeeId = formData.get('employee_id');
     const employeeName = employees.find(emp => emp.id === selectedEmployeeId)?.name || 'N/A';
 
+    // Get the authenticated user's ID
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      alert('Error: No authenticated user found. Please log in.');
+      return;
+    }
+
     const dataToInsert = {
       type: formData.get('tipo'),
-      // Removed country, phone, email
-      employee: employeeName, // Storing employee name
+      employee: employeeName,
       equipment: formData.get('equipo'),
       software: formData.get('software'),
-      message: formData.get('message'), // New field for message/description
-      status: 'Pendiente', // Default status for new requests
+      message: formData.get('message'),
+      status: 'Pendiente',
+      user_id: user.id // Add the authenticated user's ID
     };
 
     try {
@@ -136,13 +143,13 @@ const Dashboard = () => {
         alert('Pedido creado exitosamente');
         setShowNewRequestModal(false);
         e.target.reset();
-        loadRequests(); // Refresh the requests table after successful insertion
+        loadRequests(); // Refresh the requests table
       } else {
-        console.error('Supabase error during insert:', error); // Log the full error object
+        console.error('Supabase error during insert:', error);
         alert('Error: ' + (error.message || 'Ha ocurrido un error desconocido al crear el pedido.'));
       }
     } catch (err) {
-      console.error('Unexpected error creating request:', err); // Log unexpected errors
+      console.error('Unexpected error creating request:', err);
       alert('Error creating request: ' + (err.message || 'Ha ocurrido un error inesperado.'));
     }
   };
