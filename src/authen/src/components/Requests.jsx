@@ -8,7 +8,7 @@ const Requests = () => {
     <div className="flex h-screen">
       <Navbar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
 
-      <div className={`flex-1 flex flex-col ${isSidebarOpen ? 'ml-48' : 'ml-20'} transition-all duration-300`}>
+      <div className={`flex-1 flex flex-col ${isSidebarOpen ? 'ml-15' : 'ml-20'} transition-all duration-300`}>
         <header className="flex items-center justify-between px-6 py-4 bg-white shadow">
           <div className="flex items-center space-x-4">
             {/* The toggle button is now part of the Navbar component */}
