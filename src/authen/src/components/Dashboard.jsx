@@ -250,11 +250,6 @@ const Dashboard = () => {
         </button>
       </div>
 
-      {/* Alert Message */}
-      <div className="bg-orange-900/20 border-l-4 border-orange-500 text-orange-200 p-4 rounded-lg shadow text-sm">
-        ⚠️ Entrega demorada para Juan Pérez
-      </div>
-
       {/* Tickets Table */}
       <div>
         <h3 className="text-lg font-semibold mb-2 text-teal-400">Tickets Recientes</h3>
