@@ -11,6 +11,7 @@ import Settings from './components/Settings'; // New import
 import Support from './components/Support';   // New import
 import Reports from './components/Reports';   // New import
 import AdminSignin from './components/AdminSignin.jsx'; 
+import AdminDashboard from './components/AdminDashboard.jsx'; // Assuming you have an AdminDashboard component
 
 
 export const router = createBrowserRouter([
@@ -25,5 +26,6 @@ export const router = createBrowserRouter([
     { path: "/settings", element: <Settings /> }, // New route
     { path: "/support", element: <Support /> },   // New route
     { path: "/reports", element: <Reports /> },   // New route
-    { path: "/AdminSignin", element: <AdminSignin /> }
+    { path: "/AdminSignin", element: <AdminSignin /> },
+    { path: "/AdminDashboard", element: <AdminDashboard /> } // New route for Admin Dashboard
 ]);
