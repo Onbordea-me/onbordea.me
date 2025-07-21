@@ -39,6 +39,13 @@ const Signin = () => {
                 {error && <p className="text-red-600 text-center pt-4"> {error}</p>}
             </div>
         </form>
+        <div className="absolute bottom-4 right-4">
+                <Link to="/AdminSignin">
+                    <button className="bg-gray-600 text-white p-2 rounded hover:bg-gray-700">
+                        Admin Sign In
+                    </button>
+                </Link>
+            </div>
     </div>
     );
 }
