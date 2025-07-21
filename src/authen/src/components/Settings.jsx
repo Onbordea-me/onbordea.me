@@ -16,6 +16,7 @@ const Settings = () => {
     dark_mode: false,
   });
   const [loading, setLoading] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false); // Track initialization
 
   useEffect(() => {
     const fetchUserAndSettings = async () => {
@@ -25,7 +26,7 @@ const Settings = () => {
         setUser(user);
 
         if (user) {
-          console.log('Fetching settings for user:', user.id); // Debug log
+          console.log('Authenticated user ID:', user.id); // Debug log
           const { data, error } = await supabase
             .from('user_settings')
             .select('*')
@@ -34,32 +35,35 @@ const Settings = () => {
 
           if (error) {
             console.error('Error fetching settings:', error);
-            if (error.code !== 'PGRST116') { // No rows found
+            if (error.code === 'PGRST116' && !isInitialized) { // No rows found and not initialized
+              console.log('No settings found, initializing defaults for user:', user.id);
+              const defaultSettings = {
+                user_id: user.id,
+                profile_name: user.user_metadata?.name || 'Dominic Keller',
+                email_alerts: true,
+                sms_notifications: false,
+                weekly_reports: true,
+                default_currency: 'ARS',
+                date_format: 'MM/DD/YYYY',
+                time_zone: 'America/Buenos_Aires',
+                dark_mode: false,
+              };
+              const { error: insertError } = await supabase
+                .from('user_settings')
+                .insert(defaultSettings);
+              if (insertError) {
+                console.error('Error initializing settings:', insertError);
+              } else {
+                setSettings(defaultSettings); // Set defaults
+                setIsInitialized(true); // Mark as initialized
+              }
+            } else {
               throw error;
             }
-            // If no settings exist, initialize with defaults
-            const defaultSettings = {
-              user_id: user.id,
-              profile_name: user.user_metadata?.name || 'Dominic Keller',
-              email_alerts: true,
-              sms_notifications: false,
-              weekly_reports: true,
-              default_currency: 'ARS',
-              date_format: 'MM/DD/YYYY',
-              time_zone: 'America/Buenos_Aires',
-              dark_mode: false,
-            };
-            const { error: insertError } = await supabase
-              .from('user_settings')
-              .insert(defaultSettings);
-            if (insertError) {
-              console.error('Error initializing settings:', insertError);
-            } else {
-              setSettings(defaultSettings); // Set defaults immediately
-            }
           } else {
-            console.log('Loaded settings:', data); // Debug log
-            setSettings(data); // Update with fetched data
+            console.log('Loaded settings for user:', user.id, data); // Debug log
+            setSettings(data);
+            setIsInitialized(true); // Mark as initialized
           }
         }
       } catch (err) {
@@ -96,10 +100,10 @@ const Settings = () => {
         dark_mode: settings.dark_mode,
         updated_at: new Date().toISOString(),
       };
-      console.log('Saving payload:', payload); // Debug log
+      console.log('Saving payload for user:', user.id, payload); // Debug log
       const { error } = await supabase
         .from('user_settings')
-        .upsert(payload);
+        .upsert(payload, { onConflict: 'user_id' }); // Update on user_id conflict
       if (error) {
         console.error('Error saving settings:', error);
         alert('Failed to save settings. Check console for details.');
@@ -128,7 +132,7 @@ const Settings = () => {
           <div className="flex items-center space-x-4">
             <span className="text-yellow-400">🔔</span>
             <span className="text-sm">
-              {user ? `${settings.profile_name || 'User'}` : 'Loading...'}
+              {user ? `${settings.profile_name || 'User'} (${user.email})` : 'Loading...'}
             </span>
           </div>
         </header>
