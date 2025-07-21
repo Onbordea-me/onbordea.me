@@ -39,7 +39,7 @@ const Settings = () => {
               console.log('No settings found, initializing defaults for user:', user.id);
               const defaultSettings = {
                 user_id: user.id,
-                profile_name: user.user_metadata?.name || 'Dominic Keller',
+                profile_name: user.user_metadata?.name || 'User',
                 email_alerts: true,
                 sms_notifications: false,
                 weekly_reports: true,
@@ -132,7 +132,7 @@ const Settings = () => {
           <div className="flex items-center space-x-4">
             <span className="text-yellow-400">🔔</span>
             <span className="text-sm">
-              {user ? `${settings.profile_name || 'User'} (${user.email})` : 'Loading...'}
+              {user ? `${settings.profile_name || 'User'}` : 'Loading...'}
             </span>
           </div>
         </header>
