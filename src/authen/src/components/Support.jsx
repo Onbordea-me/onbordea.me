@@ -24,13 +24,13 @@ const Support = () => {
         </header>
 
         <main className="flex-1 p-6 overflow-y-auto">
-          <h2 className="text-xl font-semibold text-gray-800 mb-6">Support Center</h2>
+          <h2 className="text-xl font-semibold text-white-800 mb-6">Support Center</h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            <div className="col-span-1 lg:col-span-2 bg-white rounded-lg shadow p-4">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Live Chat</h3>
+            <div className="col-span-1 lg:col-span-2 bg-black rounded-lg shadow p-4">
+              <h3 className="text-lg font-semibold text-white-800 mb-2">Live Chat</h3>
               <div className="h-60 overflow-y-auto border rounded p-2 bg-gray-50 space-y-2 text-sm">
-                <div className="text-left"><strong>You:</strong> Hello, I need help with a delivery.</div>
+                <div className="text-left text-blue-800"><strong>You:</strong> Hello, I need help with a delivery.</div>
                 <div className="text-right text-blue-700"><strong>Support:</strong> Sure, let me check that for you.</div>
               </div>
               <div className="flex mt-2 space-x-2">
@@ -53,15 +53,6 @@ const Support = () => {
                 <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Submit</button>
               </form>
             </div>
-          </div>
-
-          <div className="mt-6 bg-white rounded-lg shadow p-4">
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">Third-Party Integrations</h3>
-            <ul className="text-sm text-gray-700 list-disc list-inside space-y-1">
-              <li>Zendesk: Integrated ✅</li>
-              <li>Intercom: Available (Contact Admin to enable)</li>
-              <li>Freshdesk: Coming Soon</li>
-            </ul>
           </div>
         </main>
       </div>
