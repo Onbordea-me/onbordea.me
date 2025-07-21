@@ -184,19 +184,23 @@ const AdminDashboard = () => {
     };
 
     try {
-      const { error } = await supabase.from('pedidos').update(updatedTicket).eq('id', selectedTicket.id);
+      const { error } = await supabase
+        .from('pedidos')
+        .update(updatedTicket)
+        .eq('id', selectedTicket.id);
+
       if (error) {
         console.error('Supabase error during update:', error);
-        alert('Error: ' + (error.message || 'Ha ocurrido un error al actualizar el ticket.'));
+        alert('Error al actualizar el ticket: ' + (error.message || 'Ha ocurrido un error desconocido.'));
       } else {
         alert('Ticket actualizado exitosamente');
         setShowEditTicketModal(false);
         setSelectedTicket(null);
-        loadRequests();
+        loadRequests(); // Refresh the requests list to reflect changes
       }
     } catch (err) {
       console.error('Unexpected error updating ticket:', err);
-      alert('Error updating ticket: ' + (err.message || 'Ha ocurrido un error inesperado.'));
+      alert('Error inesperado al actualizar el ticket: ' + (err.message || 'Por favor, intenta de nuevo.'));
     }
   };
 
