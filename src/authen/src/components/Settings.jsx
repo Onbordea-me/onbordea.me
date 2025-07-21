@@ -25,28 +25,41 @@ const Settings = () => {
         setUser(user);
 
         if (user) {
+          console.log('Fetching settings for user:', user.id); // Debug log
           const { data, error } = await supabase
             .from('user_settings')
             .select('*')
             .eq('user_id', user.id)
             .single();
 
-          if (error && error.code !== 'PGRST116') {
+          if (error) {
             console.error('Error fetching settings:', error);
-          } else if (data) {
-            setSettings(data);
-          } else {
+            if (error.code !== 'PGRST116') { // No rows found
+              throw error;
+            }
+            // If no settings exist, initialize with defaults
             const defaultSettings = {
               user_id: user.id,
               profile_name: user.user_metadata?.name || 'Dominic Keller',
-              ...settings,
+              email_alerts: true,
+              sms_notifications: false,
+              weekly_reports: true,
+              default_currency: 'ARS',
+              date_format: 'MM/DD/YYYY',
+              time_zone: 'America/Buenos_Aires',
+              dark_mode: false,
             };
             const { error: insertError } = await supabase
               .from('user_settings')
               .insert(defaultSettings);
             if (insertError) {
               console.error('Error initializing settings:', insertError);
+            } else {
+              setSettings(defaultSettings); // Set defaults immediately
             }
+          } else {
+            console.log('Loaded settings:', data); // Debug log
+            setSettings(data); // Update with fetched data
           }
         }
       } catch (err) {
