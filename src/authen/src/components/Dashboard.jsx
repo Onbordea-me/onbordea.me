@@ -187,38 +187,6 @@ const Dashboard = () => {
     setShowEmployeeDetailModal(true);
   };
 
-  // --- Edit Ticket Form Submission ---
-  const handleEditTicketSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const updatedTicket = {
-      id: selectedTicket.id,
-      type: formData.get('tipo'),
-      status: formData.get('estado'),
-      message: formData.get('mensaje'),
-      completed_at: formData.get('estado') === 'Completado' ? new Date().toISOString() : null,
-    };
-
-    try {
-      const { error } = await supabase
-        .from('pedidos')
-        .update(updatedTicket)
-        .eq('id', selectedTicket.id);
-
-      if (error) {
-        console.error('Supabase error during update:', error);
-        alert('Error al actualizar el ticket: ' + (error.message || 'Ha ocurrido un error desconocido.'));
-      } else {
-        alert('Ticket actualizado exitosamente');
-        setShowEditTicketModal(false);
-        setSelectedTicket(null);
-        loadRequests(); // Refresh the requests list to reflect changes
-      }
-    } catch (err) {
-      console.error('Unexpected error updating ticket:', err);
-      alert('Error inesperado al actualizar el ticket: ' + (err.message || 'Por favor, intenta de nuevo.'));
-    }
-  };
 
   // --- Loading or Not Authenticated ---
   if (session === undefined) return <div className="bg-black text-green-400 h-screen w-screen flex items-center justify-center">Loading...</div>;
@@ -295,7 +263,7 @@ const Dashboard = () => {
                     <th className="px-4 py-2 text-left">Empleado</th>
                     <th className="px-4 py-2 text-left">Estado</th>
                     <th className="px-4 py-2 text-left">Fecha de Creación</th>
-                    <th className="px-4 py-2 text-left">Acción</th>
+                    
                   </tr>
                 </thead>
                 <tbody>
@@ -322,14 +290,6 @@ const Dashboard = () => {
                           </span>
                         </td>
                         <td className="px-4 py-2">{new Date(request.created_at).toLocaleDateString('es-AR')}</td>
-                        <td className="px-4 py-2">
-                          <button
-                            onClick={() => { setSelectedTicket(request); setShowEditTicketModal(true); }}
-                            className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700"
-                          >
-                            Edit
-                          </button>
-                        </td>
                       </tr>
                     ))
                   ) : (

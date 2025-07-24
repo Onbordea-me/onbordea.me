@@ -1,11 +1,11 @@
-// src/components/Equipment.jsx
-import { useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient'; 
-import Navbar from './Navbar';
-import {useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { UserAuth } from "../context/AuthContext";
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../supabaseClient';
+import AdminNavbar from './Admin_Navbar';
 
-
-const Equipment = () => {
+const AdminEquipment = () => {
+  const { session } = UserAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [equipmentCategories, setEquipmentCategories] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,14 +28,22 @@ const Equipment = () => {
         setLoading(true);
 
         // Check authentication
-        const { data: { session }, error: authError } = await supabase.auth.getSession();
-        if (authError || !session) {
-          navigate('/Signin');
+        if (!session) {
+          navigate('/AdminSignin');
           return;
         }
 
-        // Check if user is admin (replace with your admin check logic)
-        setIsAdmin(session.user.email === 'admin@example.com'); // Placeholder: update with your admin condition
+        // Check if user is admin
+        const { data: admin, error: adminError } = await supabase
+          .from('admins')
+          .select('id')
+          .eq('id', session.user.id)
+          .single();
+        if (adminError || !admin) {
+          setIsAdmin(false);
+        } else {
+          setIsAdmin(true);
+        }
 
         // Fetch equipment
         const { data: equipmentData, error: equipmentError } = await supabase.from('equipment').select('*');
@@ -56,7 +64,7 @@ const Equipment = () => {
       }
     };
     fetchData();
-  }, [navigate]);
+  }, [session, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -135,7 +143,7 @@ const Equipment = () => {
 
   return (
     <div className="flex h-screen overflow-hidden font-['IBM Plex Sans'] bg-gray-900 text-gray-100">
-      <Navbar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+      <AdminNavbar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
       <div className="flex-1 flex flex-col">
         <header className="flex items-center justify-between px-6 py-4 bg-gray-900 shadow-md">
           <div className="flex items-center space-x-4">
@@ -151,7 +159,16 @@ const Equipment = () => {
           <div className="flex items-center space-x-4">
             <span className="text-yellow-400">🔔</span>
             <span className="flex items-center space-x-2">
-              <span className="text-sm text-gray-200">Dominic Keller</span>
+              <span className="text-sm text-gray-200">{session?.user?.email || 'Admin'}</span>
+              <button
+                onClick={async () => {
+                  await session?.signOutUser();
+                  navigate('/AdminSignin');
+                }}
+                className="text-purple-400 hover:text-purple-500 text-xs"
+              >
+                (Sign Out)
+              </button>
             </span>
           </div>
         </header>
@@ -236,4 +253,4 @@ const Equipment = () => {
   );
 };
 
-export default Equipment;
+export default AdminEquipment;

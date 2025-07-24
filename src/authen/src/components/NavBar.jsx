@@ -31,10 +31,6 @@ const Navbar = ({ isSidebarOpen = true, setIsSidebarOpen }) => {
           <span>📊</span>
           <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Analytics</span>
         </Link>
-        <Link to="/reports" className="flex items-center space-x-2 py-1 rounded hover:bg-blue-900 transition">
-          <span>🗂️</span>
-          <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Reports</span>
-        </Link>
         <Link to="/settings" className="flex items-center space-x-2 py-1 rounded hover:bg-green-900 transition">
           <span>🛰️</span>
           <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-sm`}>Settings</span>

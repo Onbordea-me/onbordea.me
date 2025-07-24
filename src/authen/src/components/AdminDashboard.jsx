@@ -3,12 +3,14 @@ import { UserAuth } from "../context/AuthContext";
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
+import AdminNavbar from './Admin_Navbar';
 
 const AdminDashboard = () => {
   // --- Auth/User State ---
   const { session, signOutUser } = UserAuth();
   const navigate = useNavigate();
   const [userDisplayName, setUserDisplayName] = useState('Loading...');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // --- UI State ---
   const [showNewRequestModal, setShowNewRequestModal] = useState(false);
@@ -39,14 +41,12 @@ const AdminDashboard = () => {
         .eq('id', session.user.id)
         .single();
       if (adminError || !admin) {
-        navigate('/Signin');
+        console.error('Admin check failed:', adminError?.message);
+        navigate('/AdminSignin'); // Changed to /AdminSignin for consistency
         return;
       }
 
       setUserDisplayName(session.user.email);
-
-      // Optionally fetch additional user data if needed
-      // Since you're not using user_profiles, you can skip profile fetching
     }
     checkAuthAndLoadUserInfo();
 
@@ -196,7 +196,7 @@ const AdminDashboard = () => {
         alert('Ticket actualizado exitosamente');
         setShowEditTicketModal(false);
         setSelectedTicket(null);
-        loadRequests(); // Refresh the requests list to reflect changes
+        loadRequests();
       }
     } catch (err) {
       console.error('Unexpected error updating ticket:', err);
@@ -205,16 +205,18 @@ const AdminDashboard = () => {
   };
 
   // --- Loading or Not Authenticated ---
-  if (session === undefined) return <div className="bg-black text-green-400 h-screen w-screen flex items-center justify-center">Loading...</div>;
+  if (session === undefined) return <div className="bg-gray-900 text-gray-400 h-screen flex items-center justify-center">Loading...</div>;
   if (!session) {
     navigate("/AdminSignin");
     return null;
   }
 
   // --- Render ---
+  console.log('AdminDashboard rendering, isSidebarOpen:', isSidebarOpen);
   return (
     <div className="flex h-screen overflow-hidden font-['IBM Plex Sans'] bg-gray-900 text-gray-100">
-      <div className="flex-1 flex flex-col bg-gray-800">
+      <AdminNavbar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+      <div className="flex-1 flex flex-col">
         <header className="flex items-center justify-between px-6 py-4 bg-gray-900 shadow-md">
           <div className="flex items-center space-x-4">
             <span className="text-yellow-400">🔔</span>
@@ -227,7 +229,7 @@ const AdminDashboard = () => {
           </div>
         </header>
 
-        <main className="bg-gray-800 p-6 rounded-lg shadow-inner flex flex-col gap-6 overflow-auto m-6">
+        <main className="flex-1 p-6 overflow-y-auto bg-gray-800">
           {/* Dashboard Overview */}
           <div className="flex justify-between items-start flex-wrap gap-4">
             <div className="flex gap-4 flex-wrap">
@@ -247,7 +249,7 @@ const AdminDashboard = () => {
           </div>
 
           {/* Tickets Table */}
-          <div>
+          <div className="mt-6">
             <h3 className="text-lg font-semibold mb-2 text-purple-400">Todos los Tickets</h3>
             <div className="overflow-auto">
               <table className="min-w-full text-sm bg-gray-900 border border-gray-700 rounded-lg shadow text-gray-200">
@@ -307,7 +309,7 @@ const AdminDashboard = () => {
           </div>
 
           {/* Resolved Tickets Section */}
-          <div>
+          <div className="mt-6">
             <h3 className="text-lg font-semibold mb-2 text-purple-400">Tickets Resueltos</h3>
             <div className="overflow-auto">
               <table className="min-w-full text-sm bg-gray-900 border border-gray-700 rounded-lg shadow text-gray-200">
@@ -354,21 +356,175 @@ const AdminDashboard = () => {
             </div>
           </div>
         </main>
-      </div>
 
-      {/* New Request Modal */}
-      {showNewRequestModal && (
-        <div id="newRequestModal" className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-gray-800 rounded-lg p-6 w-full max-w-lg shadow-xl text-gray-100">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-purple-400">Nuevo Pedido</h2>
-              <button onClick={() => setShowNewRequestModal(false)} className="text-gray-400 hover:text-gray-200 text-2xl">×</button>
-            </div>
-            <form onSubmit={handleNewRequestSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+        {/* New Request Modal */}
+        {showNewRequestModal && (
+          <div id="newRequestModal" className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+            <div className="bg-gray-800 rounded-lg p-6 w-full max-w-lg shadow-xl text-gray-100">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold text-purple-400">Nuevo Pedido</h2>
+                <button onClick={() => setShowNewRequestModal(false)} className="text-gray-400 hover:text-gray-200 text-2xl">×</button>
+              </div>
+              <form onSubmit={handleNewRequestSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="requestType" className="block text-sm font-medium text-gray-300">Tipo de Pedido</label>
+                    <select id="requestType" name="tipo" className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" required>
+                      <option value="Onboarding">Onboarding</option>
+                      <option value="Offboarding">Offboarding</option>
+                      <option value="Mantenimiento">Mantenimiento</option>
+                      <option value="Equipment Change">Equipment Change</option>
+                      <option value="Support">Support</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="employeeSelect" className="block text-sm font-medium text-gray-300">Nombre del Empleado</label>
+                    <select
+                      id="employeeSelect"
+                      name="employee_id"
+                      required
+                      className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500"
+                    >
+                      <option value="">Seleccione Empleado</option>
+                      {employees.map(emp => (
+                        <option key={emp.id} value={emp.id}>
+                          {emp.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="equipmentType" className="block text-sm font-medium text-gray-300">Tipo de Equipo</label>
+                    <input type="text" id="equipmentType" name="equipo" className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" />
+                  </div>
+                  <div>
+                    <label htmlFor="softwareRequired" className="block text-sm font-medium text-gray-300">Software Requerido</label>
+                    <select id="softwareRequired" name="software" className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500">
+                      <option value="">Seleccione</option>
+                      <option value="Office Suite">Office Suite</option>
+                      <option value="Design Tools">Design Tools</option>
+                      <option value="Antivirus">Antivirus</option>
+                    </select>
+                  </div>
+                </div>
                 <div>
-                  <label htmlFor="requestType" className="block text-sm font-medium text-gray-300">Tipo de Pedido</label>
-                  <select id="requestType" name="tipo" className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" required>
+                  <label htmlFor="messageDescription" className="block text-sm font-medium text-gray-300">Mensaje/Descripción</label>
+                  <textarea id="messageDescription" name="message" rows="3" className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" placeholder="Detalles adicionales del pedido..."></textarea>
+                </div>
+                <div className="flex justify-end space-x-2 pt-4">
+                  <button type="button" onClick={() => setShowNewRequestModal(false)} className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">Cancelar</button>
+                  <button type="submit" className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Crear Pedido</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Employee Detail Modal */}
+        {showEmployeeDetailModal && selectedEmployee && (
+          <div id="employeeDetailModal" className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+            <div className="bg-gray-800 rounded-lg p-6 w-full max-w-2xl shadow-xl text-gray-100">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold text-purple-400">Detalle de Empleado</h2>
+                <button onClick={() => setShowEmployeeDetailModal(false)} className="text-gray-400 hover:text-gray-200 text-2xl">×</button>
+              </div>
+              <div id="employeeDetailContent">
+                <div className="flex items-center space-x-4 mb-4">
+                  <div className="h-12 w-12 bg-gray-700 rounded-full flex items-center justify-center font-semibold text-gray-300">
+                    <span id="employeeInitials">{selectedEmployee.name.split(' ').map(w => w[0]).join('').toUpperCase()}</span>
+                  </div>
+                  <div>
+                    <h3 id="employeeName" className="font-medium text-lg text-gray-200">{selectedEmployee.name}</h3>
+                    <p id="employeeEmail" className="text-sm text-gray-400">{selectedEmployee.email || 'N/A'}</p>
+                    <p id="employeePosition" className="text-sm text-gray-400">{selectedEmployee.position || 'N/A'}</p>
+                    <p id="employeeLocation" className="text-sm text-gray-400">{selectedEmployee.location || 'N/A'}</p>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-2 text-gray-300">Tickets Asociados</h4>
+                  <table className="w-full text-sm border border-gray-700 rounded-lg">
+                    <thead>
+                      <tr className="bg-gray-700 text-gray-100">
+                        <th className="p-2 text-left">Tipo</th>
+                        <th className="p-2 text-left">Estado</th>
+                        <th className="p-2 text-left">Fecha de Creación</th>
+                        <th className="p-2 text-left">Mensaje</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {requests.filter(req => req.employee === selectedEmployee.name).length > 0 ? (
+                        requests.filter(req => req.employee === selectedEmployee.name).map((ticket, index) => (
+                          <tr key={index} className="border-t border-gray-700 hover:bg-gray-700">
+                            <td className="p-2">{ticket.type}</td>
+                            <td className="p-2">{ticket.status}</td>
+                            <td className="p-2">{new Date(ticket.created_at).toLocaleDateString('es-AR')}</td>
+                            <td className="p-2">{ticket.message}</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="4" className="p-2 text-center text-gray-500">No tickets found for this employee.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Add Employee Modal */}
+        {showAddEmployeeModal && (
+          <div id="addEmployeeModal" className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+            <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md shadow-xl text-gray-100">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold text-purple-400">Registrar Nuevo Empleado</h2>
+                <button onClick={() => setShowAddEmployeeModal(false)} className="text-gray-400 hover:text-gray-200 text-2xl">×</button>
+              </div>
+              <form onSubmit={handleAddEmployeeSubmit} className="space-y-4">
+                <div>
+                  <label htmlFor="employeeName" className="block text-sm font-medium text-gray-300">Nombre</label>
+                  <input type="text" id="employeeName" name="name" className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" required />
+                </div>
+                <div>
+                  <label htmlFor="employeeEmail" className="block text-sm font-medium text-gray-300">Email</label>
+                  <input type="email" id="employeeEmail" name="email" className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" required />
+                </div>
+                <div>
+                  <label htmlFor="employeePosition" className="block text-sm font-medium text-gray-300">Puesto</label>
+                  <input type="text" id="employeePosition" name="position" className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" />
+                </div>
+                <div>
+                  <label htmlFor="employeeLocation" className="block text-sm font-medium text-gray-300">Ubicación</label>
+                  <input type="text" id="employeeLocation" name="location" className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" />
+                </div>
+                <div>
+                  <label htmlFor="employeeEquipment" className="block text-sm font-medium text-gray-300">Equipo (opcional, separado por comas)</label>
+                  <input type="text" id="employeeEquipment" name="equipment" className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" />
+                </div>
+                <div className="flex justify-end space-x-2 pt-4">
+                  <button type="button" onClick={() => setShowAddEmployeeModal(false)} className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">Cancelar</button>
+                  <button type="submit" className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Registrar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Ticket Modal */}
+        {showEditTicketModal && selectedTicket && (
+          <div id="editTicketModal" className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+            <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md shadow-xl text-gray-100">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold text-purple-400">Editar Ticket</h2>
+                <button onClick={() => { setShowEditTicketModal(false); setSelectedTicket(null); }} className="text-gray-400 hover:text-gray-200 text-2xl">×</button>
+              </div>
+              <form onSubmit={handleEditTicketSubmit} className="space-y-4">
+                <div>
+                  <label htmlFor="editType" className="block text-sm font-medium text-gray-300">Tipo de Pedido</label>
+                  <select id="editType" name="tipo" defaultValue={selectedTicket.type} className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" required>
                     <option value="Onboarding">Onboarding</option>
                     <option value="Offboarding">Offboarding</option>
                     <option value="Mantenimiento">Mantenimiento</option>
@@ -378,180 +534,26 @@ const AdminDashboard = () => {
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="employeeSelect" className="block text-sm font-medium text-gray-300">Nombre del Empleado</label>
-                  <select
-                    id="employeeSelect"
-                    name="employee_id"
-                    required
-                    className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500"
-                  >
-                    <option value="">Seleccione Empleado</option>
-                    {employees.map(emp => (
-                      <option key={emp.id} value={emp.id}>
-                        {emp.name}
-                      </option>
-                    ))}
+                  <label htmlFor="editStatus" className="block text-sm font-medium text-gray-300">Estado</label>
+                  <select id="editStatus" name="estado" defaultValue={selectedTicket.status} className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" required>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="En proceso">En proceso</option>
+                    <option value="Completado">Completado</option>
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="equipmentType" className="block text-sm font-medium text-gray-300">Tipo de Equipo</label>
-                  <input type="text" id="equipmentType" name="equipo" className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" />
+                  <label htmlFor="editMessage" className="block text-sm font-medium text-gray-300">Mensaje/Descripción</label>
+                  <textarea id="editMessage" name="mensaje" defaultValue={selectedTicket.message} rows="3" className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" placeholder="Detalles adicionales del pedido..."></textarea>
                 </div>
-                <div>
-                  <label htmlFor="softwareRequired" className="block text-sm font-medium text-gray-300">Software Requerido</label>
-                  <select id="softwareRequired" name="software" className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500">
-                    <option value="">Seleccione</option>
-                    <option value="Office Suite">Office Suite</option>
-                    <option value="Design Tools">Design Tools</option>
-                    <option value="Antivirus">Antivirus</option>
-                  </select>
+                <div className="flex justify-end space-x-2 pt-4">
+                  <button type="button" onClick={() => { setShowEditTicketModal(false); setSelectedTicket(null); }} className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">Cancelar</button>
+                  <button type="submit" className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Guardar</button>
                 </div>
-              </div>
-              <div>
-                <label htmlFor="messageDescription" className="block text-sm font-medium text-gray-300">Mensaje/Descripción</label>
-                <textarea id="messageDescription" name="message" rows="3" className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" placeholder="Detalles adicionales del pedido..."></textarea>
-              </div>
-              <div className="flex justify-end space-x-2 pt-4">
-                <button type="button" onClick={() => setShowNewRequestModal(false)} className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">Cancelar</button>
-                <button type="submit" className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Crear Pedido</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Employee Detail Modal */}
-      {showEmployeeDetailModal && selectedEmployee && (
-        <div id="employeeDetailModal" className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-gray-800 rounded-lg p-6 w-full max-w-2xl shadow-xl text-gray-100">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-purple-400">Detalle de Empleado</h2>
-              <button onClick={() => setShowEmployeeDetailModal(false)} className="text-gray-400 hover:text-gray-200 text-2xl">×</button>
-            </div>
-            <div id="employeeDetailContent">
-              <div className="flex items-center space-x-4 mb-4">
-                <div className="h-12 w-12 bg-gray-700 rounded-full flex items-center justify-center font-semibold text-gray-300">
-                  <span id="employeeInitials">{selectedEmployee.name.split(' ').map(w => w[0]).join('').toUpperCase()}</span>
-                </div>
-                <div>
-                  <h3 id="employeeName" className="font-medium text-lg text-gray-200">{selectedEmployee.name}</h3>
-                  <p id="employeeEmail" className="text-sm text-gray-400">{selectedEmployee.email || 'N/A'}</p>
-                  <p id="employeePosition" className="text-sm text-gray-400">{selectedEmployee.position || 'N/A'}</p>
-                  <p id="employeeLocation" className="text-sm text-gray-400">{selectedEmployee.location || 'N/A'}</p>
-                </div>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-2 text-gray-300">Tickets Asociados</h4>
-                <table className="w-full text-sm border border-gray-700 rounded-lg">
-                  <thead>
-                    <tr className="bg-gray-700 text-gray-100">
-                      <th className="p-2 text-left">Tipo</th>
-                      <th className="p-2 text-left">Estado</th>
-                      <th className="p-2 text-left">Fecha de Creación</th>
-                      <th className="p-2 text-left">Mensaje</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {requests.filter(req => req.employee === selectedEmployee.name).length > 0 ? (
-                      requests.filter(req => req.employee === selectedEmployee.name).map((ticket, index) => (
-                        <tr key={index} className="border-t border-gray-700 hover:bg-gray-700">
-                          <td className="p-2">{ticket.type}</td>
-                          <td className="p-2">{ticket.status}</td>
-                          <td className="p-2">{new Date(ticket.created_at).toLocaleDateString('es-AR')}</td>
-                          <td className="p-2">{ticket.message}</td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="4" className="p-2 text-center text-gray-500">No tickets found for this employee.</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+              </form>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Add Employee Modal */}
-      {showAddEmployeeModal && (
-        <div id="addEmployeeModal" className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md shadow-xl text-gray-100">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-purple-400">Registrar Nuevo Empleado</h2>
-              <button onClick={() => setShowAddEmployeeModal(false)} className="text-gray-400 hover:text-gray-200 text-2xl">×</button>
-            </div>
-            <form onSubmit={handleAddEmployeeSubmit} className="space-y-4">
-              <div>
-                <label htmlFor="employeeName" className="block text-sm font-medium text-gray-300">Nombre</label>
-                <input type="text" id="employeeName" name="name" className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" required />
-              </div>
-              <div>
-                <label htmlFor="employeeEmail" className="block text-sm font-medium text-gray-300">Email</label>
-                <input type="email" id="employeeEmail" name="email" className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" required />
-              </div>
-              <div>
-                <label htmlFor="employeePosition" className="block text-sm font-medium text-gray-300">Puesto</label>
-                <input type="text" id="employeePosition" name="position" className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" />
-              </div>
-              <div>
-                <label htmlFor="employeeLocation" className="block text-sm font-medium text-gray-300">Ubicación</label>
-                <input type="text" id="employeeLocation" name="location" className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" />
-              </div>
-              <div>
-                <label htmlFor="employeeEquipment" className="block text-sm font-medium text-gray-300">Equipo (opcional, separado por comas)</label>
-                <input type="text" id="employeeEquipment" name="equipment" className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" />
-              </div>
-              <div className="flex justify-end space-x-2 pt-4">
-                <button type="button" onClick={() => setShowAddEmployeeModal(false)} className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">Cancelar</button>
-                <button type="submit" className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Registrar</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Ticket Modal */}
-      {showEditTicketModal && selectedTicket && (
-        <div id="editTicketModal" className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md shadow-xl text-gray-100">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-purple-400">Editar Ticket</h2>
-              <button onClick={() => { setShowEditTicketModal(false); setSelectedTicket(null); }} className="text-gray-400 hover:text-gray-200 text-2xl">×</button>
-            </div>
-            <form onSubmit={handleEditTicketSubmit} className="space-y-4">
-              <div>
-                <label htmlFor="editType" className="block text-sm font-medium text-gray-300">Tipo de Pedido</label>
-                <select id="editType" name="tipo" defaultValue={selectedTicket.type} className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" required>
-                  <option value="Onboarding">Onboarding</option>
-                  <option value="Offboarding">Offboarding</option>
-                  <option value="Mantenimiento">Mantenimiento</option>
-                  <option value="Equipment Change">Equipment Change</option>
-                  <option value="Support">Support</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-              <div>
-                <label htmlFor="editStatus" className="block text-sm font-medium text-gray-300">Estado</label>
-                <select id="editStatus" name="estado" defaultValue={selectedTicket.status} className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" required>
-                  <option value="Pendiente">Pendiente</option>
-                  <option value="En proceso">En proceso</option>
-                  <option value="Completado">Completado</option>
-                </select>
-              </div>
-              <div>
-                <label htmlFor="editMessage" className="block text-sm font-medium text-gray-300">Mensaje/Descripción</label>
-                <textarea id="editMessage" name="mensaje" defaultValue={selectedTicket.message} rows="3" className="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-100 focus:outline-none focus:border-purple-500" placeholder="Detalles adicionales del pedido..."></textarea>
-              </div>
-              <div className="flex justify-end space-x-2 pt-4">
-                <button type="button" onClick={() => { setShowEditTicketModal(false); setSelectedTicket(null); }} className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">Cancelar</button>
-                <button type="submit" className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Guardar</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

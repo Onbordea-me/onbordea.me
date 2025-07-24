@@ -1,43 +1,87 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { UserAuth } from "../context/AuthContext";
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import { supabase } from '../supabaseClient';
 
-const AdminNavbar = ({ isSidebarOpen = true, setIsSidebarOpen }) => {
-  const sidebarWidth = isSidebarOpen ? 'w-56' : 'w-16'; // Wider sidebar when open
+const AdminNavbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
+  const { session } = UserAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  // Check authentication and admin status on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        setLoading(true);
+        if (!session) {
+          navigate('/AdminSignin');
+          return;
+        }
+        // Check if the user is an admin
+        const { data: admin, error: adminError } = await supabase
+          .from('admins')
+          .select('id')
+          .eq('id', session.user.id)
+          .single();
+        if (adminError || !admin) {
+          navigate('/AdminSignin');
+          return;
+        }
+        setIsAdmin(true);
+      } catch (err) {
+        navigate('/AdminSignin');
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkAuth();
+  }, [session, navigate]);
+
+  if (loading) {
+    return <div className="bg-gray-900 text-gray-400 h-screen flex items-center justify-center">Loading...</div>;
+  }
+
+  if (!isAdmin) {
+    return null;
+  }
 
   return (
-    <aside
-      className={`${sidebarWidth} bg-gray-950 text-orange-500 flex flex-col py-6 space-y-8 transition-all duration-300 h-screen shadow-lg`}
+    <div
+      className={`${
+        isSidebarOpen ? 'w-64' : 'w-20'
+      } bg-gray-900 text-gray-100 h-screen flex flex-col transition-all duration-300 font-['IBM Plex Sans']`}
     >
-      <div className="flex justify-center">
-        <Link to="/admin">
-          <img src="/assets/admin-logo.png" alt="Admin Logo" className="w-20 h-14" />
-        </Link>
-      </div>
-      <nav className="flex flex-col items-center space-y-8 mt-6">
-        <Link to="/admin/tickets" className="flex items-center space-x-3 py-2 px-4 rounded-lg hover:bg-orange-900 transition">
-          <span>🎫</span>
-          <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-md font-medium`}>Tickets</span>
-        </Link>
-        <Link to="/admin/equipment" className="flex items-center space-x-3 py-2 px-4 rounded-lg hover:bg-orange-900 transition">
-          <span>🔧</span>
-          <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-md font-medium`}>Equipment</span>
-        </Link>
-        <Link to="/admin/settings" className="flex items-center space-x-3 py-2 px-4 rounded-lg hover:bg-orange-900 transition">
-          <span>⚙️</span>
-          <span className={`sidebar-label ${isSidebarOpen ? '' : 'hidden'} text-md font-medium`}>Settings</span>
-        </Link>
-      </nav>
-
-      {/* Sidebar toggle button */}
-      {setIsSidebarOpen && (
+      {/* Sidebar Header */}
+      <div className="flex items-center justify-between p-4">
+        {isSidebarOpen && <h2 className="text-lg font-semibold text-teal-400">Admin Panel</h2>}
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-800 text-orange-500 rounded-full p-3 hover:bg-gray-700"
+          className="text-gray-400 hover:text-teal-400 text-xl"
         >
-          {isSidebarOpen ? "«" : "»"}
+          {isSidebarOpen ? '◄' : '►'}
         </button>
-      )}
-    </aside>
+      </div>
+
+      {/* Navigation Links */}
+      <nav className="flex-1 flex flex-col gap-2 p-4">
+        <Link
+          to="/AdminDashboard"
+          className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-800 text-gray-200 hover:text-teal-400 transition-colors"
+        >
+          <span>📊</span>
+          {isSidebarOpen && <span>Dashboard</span>}
+        </Link>
+        <Link
+          to="/Admin_Equipment"
+          className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-800 text-gray-200 hover:text-teal-400 transition-colors"
+        >
+          <span>📦</span>
+          {isSidebarOpen && <span>Equipment</span>}
+        </Link>
+      </nav>
+    </div>
   );
 };
 
